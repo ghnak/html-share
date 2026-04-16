@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detection Log Analyzer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161d;
+    --bg3: #1a1e28;
+    --bg4: #212636;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #e8eaf0;
+    --text2: #9098b0;
+    --text3: #5a6280;
+    --accent: #00d4aa;
+    --accent2: #0094ff;
+    --danger: #ff4d4d;
+    --warn: #ffaa00;
+    --purple: #a78bfa;
+    --radius: 8px;
+    --radius2: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace; font-size: 13px; line-height: 1.5; }
+  
+  /* HEADER */
+  .header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
+  .logo { width: 32px; height: 32px; border: 1.5px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .logo svg { width: 18px; height: 18px; }
+  .title { font-size: 15px; font-weight: 600; letter-spacing: 0.05em; color: var(--text); }
+  .title span { color: var(--accent); }
+  .header-meta { margin-left: auto; font-size: 11px; color: var(--text3); }
+  .sensor-info { display: flex; gap: 16px; align-items: center; }
+  .sensor-badge { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; font-size: 11px; color: var(--text2); }
+
+  /* MAIN LAYOUT */
+  .main { display: grid; grid-template-columns: 280px 1fr; grid-template-rows: auto 1fr; height: calc(100vh - 57px); overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar { grid-row: 1 / 3; background: var(--bg2); border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
+  .sidebar-section { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-section h3 { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; }
+  
+  /* FILTERS */
+  .filter-row { margin-bottom: 8px; }
+  .filter-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; display: block; }
+  .filter-row input, .filter-row select { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 5px 8px; color: var(--text); font-family: inherit; font-size: 12px; outline: none; }
+  .filter-row input:focus, .filter-row select:focus { border-color: var(--accent); }
+  .filter-row select option { background: var(--bg3); }
+  .range-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 4px; align-items: center; }
+  .range-row span { text-align: center; color: var(--text3); font-size: 11px; }
+  .range-row input { width: 100%; }
+  .btn { width: 100%; padding: 7px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; letter-spacing: 0.04em; }
+  .btn:hover { opacity: 0.9; }
+  .btn-secondary { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); font-weight: 400; margin-top: 6px; }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* STATS */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat { background: var(--bg3); border-radius: var(--radius); padding: 8px 10px; border: 1px solid var(--border); }
+  .stat-val { font-size: 20px; font-weight: 600; color: var(--accent); }
+  .stat-val.warn { color: var(--warn); }
+  .stat-val.danger { color: var(--danger); }
+  .stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  /* COMPASS */
+  .compass-wrap { display: flex; justify-content: center; padding: 10px 0; }
+  canvas#compass { border-radius: 50%; }
+
+  /* TOP NAMES */
+  .name-list { list-style: none; }
+  .name-list li { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 11px; cursor: pointer; }
+  .name-list li:hover { color: var(--accent); }
+  .name-list li:last-child { border-bottom: none; }
+  .name-bar-wrap { flex: 1; background: var(--bg3); border-radius: 2px; height: 4px; overflow: hidden; }
+  .name-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+  .name-count { color: var(--text3); min-width: 28px; text-align: right; }
+
+  /* CONTENT */
+  .content { overflow-y: auto; background: var(--bg); }
+  
+  /* TOP BAR */
+  .topbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .tab-btn { background: none; border: none; color: var(--text3); font-family: inherit; font-size: 12px; cursor: pointer; padding: 4px 10px; border-radius: 4px; }
+  .tab-btn.active { background: var(--bg3); color: var(--accent); border: 1px solid var(--border2); }
+  .record-count { margin-left: auto; font-size: 11px; color: var(--text3); }
+
+  /* DETAIL PANEL */
+  .detail-panel { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 16px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .detail-panel.hidden { display: none; }
+  .detail-block { }
+  .detail-label { font-size: 10px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; }
+  .detail-value { font-size: 14px; color: var(--text); }
+  .detail-value.accent { color: var(--accent); }
+  .detail-value.warn { color: var(--warn); }
+
+  /* CHARTS GRID */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
+  .chart-panel { background: var(--bg); padding: 16px; }
+  .chart-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+
+  /* TABLE VIEW */
+  .table-view { padding: 0; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .data-table th { background: var(--bg2); padding: 8px 12px; text-align: left; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text3); border-bottom: 1px solid var(--border); position: sticky; top: 0; cursor: pointer; user-select: none; }
+  .data-table th:hover { color: var(--accent); }
+  .data-table td { padding: 7px 12px; border-bottom: 1px solid var(--border); color: var(--text2); white-space: nowrap; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+  .data-table tr:hover td { background: var(--bg2); color: var(--text); cursor: pointer; }
+  .data-table tr.selected td { background: var(--bg3); color: var(--text); border-left: 2px solid var(--accent); }
+  .protocol-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; }
+  .proto-FHSS { background: rgba(0,212,170,0.15); color: var(--accent); }
+  .proto-OFDM, .proto-OSOFDM { background: rgba(0,148,255,0.15); color: var(--accent2); }
+  .proto-LORA { background: rgba(167,139,250,0.15); color: var(--purple); }
+  .proto-CRSF, .proto-DSMX, .proto-AFHDS { background: rgba(255,170,0,0.15); color: var(--warn); }
+  .proto-default { background: var(--bg3); color: var(--text3); }
+  .rssi-bar { display: inline-block; width: 40px; height: 4px; border-radius: 2px; margin-left: 6px; vertical-align: middle; }
+
+  /* DROP ZONE */
+  .drop-zone { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 200; border: 2px dashed var(--accent); }
+  .drop-zone.hidden { display: none; }
+  .drop-icon { font-size: 48px; }
+  .drop-text { font-size: 18px; color: var(--accent); font-weight: 600; }
+  .drop-sub { font-size: 13px; color: var(--text3); }
+
+  /* UPLOAD PROMPT */
+  .upload-prompt { display: flex; flex-direction: column; align-items: center; justify-content: center; height: calc(100vh - 100px); gap: 16px; color: var(--text3); }
+  .upload-prompt.hidden { display: none; }
+  .upload-icon { width: 64px; height: 64px; border: 1.5px dashed var(--border2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .upload-title { font-size: 16px; color: var(--text2); }
+  .upload-sub { font-size: 12px; text-align: center; max-width: 320px; line-height: 1.6; }
+  .upload-btn-wrap { margin-top: 8px; }
+  .upload-btn { padding: 8px 20px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  input#file-input { display: none; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+  /* PAGE TABS */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* TIMELINE */
+  .timeline-wrap { padding: 16px; }
+
+  /* MAP placeholder */
+  .map-placeholder { padding: 16px; color: var(--text3); font-size: 12px; text-align: center; }
+  .coords-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .coords-table th { color: var(--text3); text-align: left; padding: 6px 10px; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  .coords-table td { padding: 5px 10px; border-bottom: 1px solid var(--border); color: var(--text2); }
+  .map-link { color: var(--accent2); text-decoration: none; font-size: 11px; }
+  .map-link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="drop-zone hidden" id="dropZone">
+  <div class="drop-icon">📡</div>
+  <div class="drop-text">Drop CSV log file</div>
+  <div class="drop-sub">detection log (.csv)</div>
+</div>
+
+<div class="header">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a14 14 0 0 0 0 17M20.5 3.5a14 14 0 0 1 0 17"/>
+    </svg>
+  </div>
+  <div class="title">Detection Log Analyzer</div>
+  <div class="sensor-info" id="sensorInfo" style="display:none">
+    <div class="sensor-badge" id="sensorBadge">—</div>
+    <div class="sensor-badge" id="sensorLocation">—</div>
+    <div class="sensor-badge" id="dateRange">—</div>
+  </div>
+  <div class="header-meta">
+    <label for="file-input" style="cursor:pointer; color: var(--accent2); font-size:11px;">[ Load CSV ]</label>
+    <input type="file" id="file-input" accept=".csv">
+  </div>
+</div>
+
+<div class="main" id="mainLayout">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar" style="display:none">
+    <div class="sidebar-section">
+      <h3>Summary</h3>
+      <div class="stat-grid" id="statGrid">
+        <div class="stat"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Total events</div></div>
+        <div class="stat"><div class="stat-val warn" id="s-names">0</div><div class="stat-lbl">Unique devices</div></div>
+        <div class="stat"><div class="stat-val" id="s-proto">0</div><div class="stat-lbl">Protocols</div></div>
+        <div class="stat"><div class="stat-val danger" id="s-filtered">0</div><div class="stat-lbl">Filtered rows</div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Bearing (Angle of Arrival)</h3>
+      <div class="compass-wrap">
+        <canvas id="compass" width="220" height="220"></canvas>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Filters</h3>
+      <div class="filter-row">
+        <label class="filter-label">Date from</label>
+        <input type="date" id="f-date-from">
+      </div>
+      <div class="filter-row">
+        <label class="filter-label">Date to</label>
+        <input type="date" id="f-date-to">
+      </div>
+      <div class="filter-row">
+        <label class="filter-label">Device name</label>
+        <select id="f-name"><option value="">All devices</option></select>
+      </div>
+      <div class="filter-row">
+        <label class="filter-label">Protocol</label>
+        <select id="f-proto"><option value="">All protocols</option></select>
+      </div>
+      <div class="filter-row">
+        <label class="filter-label">Frequency (MHz)</label>
+        <div class="range-row">
+          <input type="number" id="f-freq-min" placeholder="Min">
+          <span>—</span>
+          <input type="number" id="f-freq-max" placeholder="Max">
+        </div>
+      </div>
+      <div class="filter-row" style="margin-top:10px">
+        <button class="btn" onclick="applyFilters()">Apply Filters</button>
+        <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Top Devices</h3>
+      <ul class="name-list" id="nameList"></ul>
+    </div>
+  </div>
+
+  <!-- CONTENT AREA -->
+  <div class="content" id="contentArea">
+    <!-- UPLOAD PROMPT -->
+    <div class="upload-prompt" id="uploadPrompt">
+      <div class="upload-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5">
+          <circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a14 14 0 0 0 0 17M20.5 3.5a14 14 0 0 1 0 17"/>
+        </svg>
+      </div>
+      <div class="upload-title">Log Analyzer</div>
+      <div class="upload-sub">Load an CSV event log to begin analysis. Supports detection logs from sensors and compatible devices.</div>
+      <div class="upload-btn-wrap">
+        <label for="file-input"><span class="upload-btn">Load CSV Log</span></label>
+      </div>
+      <div style="font-size:11px; color: var(--text3); margin-top: 8px;">or drag & drop a file anywhere on this window</div>
+    </div>
+
+    <!-- DATA VIEWS (hidden until loaded) -->
+    <div id="dataViews" style="display:none">
+      <div class="topbar">
+        <button class="tab-btn active" onclick="switchTab('charts')" id="tab-charts">Charts</button>
+        <button class="tab-btn" onclick="switchTab('table')" id="tab-table">Detection Log</button>
+        <button class="tab-btn" onclick="switchTab('location')" id="tab-location">Locations</button>
+        <div class="record-count" id="recordCount"></div>
+      </div>
+
+      <div class="detail-panel hidden" id="detailPanel">
+        <div class="detail-block"><div class="detail-label">Timestamp</div><div class="detail-value accent" id="d-time">—</div></div>
+        <div class="detail-block"><div class="detail-label">Device</div><div class="detail-value" id="d-name">—</div></div>
+        <div class="detail-block"><div class="detail-label">Protocol</div><div class="detail-value" id="d-proto">—</div></div>
+        <div class="detail-block"><div class="detail-label">Frequency</div><div class="detail-value warn" id="d-freq">—</div></div>
+        <div class="detail-block"><div class="detail-label">Max RSSI</div><div class="detail-value" id="d-rssi-max">—</div></div>
+        <div class="detail-block"><div class="detail-label">Min RSSI</div><div class="detail-value" id="d-rssi-min">—</div></div>
+        <div class="detail-block"><div class="detail-label">Count</div><div class="detail-value" id="d-count">—</div></div>
+        <div class="detail-block"><div class="detail-label">Angle of Arrival</div><div class="detail-value accent" id="d-angle">—</div></div>
+        <div class="detail-block"><div class="detail-label">Wi-Fi</div><div class="detail-value" id="d-wifi">—</div></div>
+        <div class="detail-block"><div class="detail-label">Manufacturer</div><div class="detail-value" id="d-mfr">—</div></div>
+      </div>
+
+      <!-- CHARTS PAGE -->
+      <div class="page active" id="page-charts">
+        <div class="charts-grid">
+          <div class="chart-panel">
+            <div class="chart-title">Detections over time</div>
+            <div style="position:relative;height:220px"><canvas id="chartTimeline" role="img" aria-label="Detections over time"></canvas></div>
+          </div>
+          <div class="chart-panel">
+            <div class="chart-title">Frequency distribution (MHz)</div>
+            <div style="position:relative;height:220px"><canvas id="chartFreq" role="img" aria-label="Frequency distribution"></canvas></div>
+          </div>
+          <div class="chart-panel">
+            <div class="chart-title">Protocol breakdown</div>
+            <div style="position:relative;height:220px"><canvas id="chartProto" role="img" aria-label="Protocol breakdown"></canvas></div>
+          </div>
+          <div class="chart-panel">
+            <div class="chart-title">RSSI distribution (dBm)</div>
+            <div style="position:relative;height:220px"><canvas id="chartRssi" role="img" aria-label="RSSI distribution"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-panel" style="border-top:1px solid var(--border)">
+          <div class="chart-title">Events per device</div>
+          <div id="devChartWrap" style="position:relative"><canvas id="chartDevices" role="img" aria-label="Events per device"></canvas></div>
+        </div>
+      </div>
+
+      <!-- TABLE PAGE -->
+      <div class="page" id="page-table">
+        <div class="table-view">
+          <table class="data-table" id="dataTable">
+            <thead>
+              <tr>
+                <th onclick="sortBy('Timestamp (AUSTRALIA/SYDNEY)')">#</th>
+                <th onclick="sortBy('Timestamp (AUSTRALIA/SYDNEY)')">Timestamp ↕</th>
+                <th onclick="sortBy('Name')">Device ↕</th>
+                <th onclick="sortBy('Protocol')">Protocol ↕</th>
+                <th onclick="sortBy('Frequency (Hz)')">Freq (MHz) ↕</th>
+                <th onclick="sortBy('Max Power (RSSI)')">Max RSSI ↕</th>
+                <th onclick="sortBy('Min Power (RSSI)')">Min RSSI ↕</th>
+                <th onclick="sortBy('Detection Count')">Count ↕</th>
+                <th onclick="sortBy('Angle of Arrival')">Angle ↕</th>
+                <th>Wi-Fi</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LOCATION PAGE -->
+      <div class="page" id="page-location">
+        <div style="padding:16px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Sensor location and drone detection positions. Click a row to open in Google Maps.</div>
+          <table class="coords-table" id="locationTable">
+            <thead>
+              <tr><th>Timestamp</th><th>Device</th><th>Sensor Lat/Lon</th><th>Sensor Alt</th><th>Drone Lat/Lon</th><th>H. Dist</th><th>V. Dist</th><th>Map</th></tr>
+            </thead>
+            <tbody id="locationBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allData = [];
+let filteredData = [];
+let chartInstances = {};
+let sortCol = 'Timestamp (AUSTRALIA/SYDNEY)';
+let sortAsc = false;
+
+// DRAG & DROP
+document.addEventListener('dragover', e => { e.preventDefault(); document.getElementById('dropZone').classList.remove('hidden'); });
+document.addEventListener('dragleave', e => { if (e.clientX === 0 && e.clientY === 0) document.getElementById('dropZone').classList.add('hidden'); });
+document.addEventListener('drop', e => { e.preventDefault(); document.getElementById('dropZone').classList.add('hidden'); const file = e.dataTransfer.files[0]; if (file) handleFile(file); });
+document.getElementById('file-input').addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => { parseCSV(e.target.result); };
+  reader.readAsText(file);
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+  allData = [];
+  for (let i = 1; i < lines.length; i++) {
+    const vals = splitCSVLine(lines[i]);
+    if (vals.length < 2) continue;
+    const row = {};
+    headers.forEach((h, idx) => { row[h] = vals[idx] ? vals[idx].replace(/"/g, '').trim() : ''; });
+    allData.push(row);
+  }
+  initUI();
+}
+
+function splitCSVLine(line) {
+  const result = [];
+  let cur = '';
+  let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '"') { inQ = !inQ; }
+    else if (line[i] === ',' && !inQ) { result.push(cur); cur = ''; }
+    else { cur += line[i]; }
+  }
+  result.push(cur);
+  return result;
+}
+
+function initUI() {
+  filteredData = [...allData];
+  populateFilters();
+  updateHeader();
+  document.getElementById('uploadPrompt').classList.add('hidden');
+  document.getElementById('dataViews').style.display = 'block';
+  document.getElementById('sidebar').style.display = 'flex';
+  document.getElementById('sensorInfo').style.display = 'flex';
+  updateAll();
+}
+
+function populateFilters() {
+  const names = [...new Set(allData.map(r => r['Name']).filter(Boolean))].sort();
+  const protos = [...new Set(allData.map(r => r['Protocol']).filter(Boolean))].sort();
+  const nSel = document.getElementById('f-name');
+  const pSel = document.getElementById('f-proto');
+  nSel.innerHTML = '<option value="">All devices</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+  pSel.innerHTML = '<option value="">All protocols</option>' + protos.map(p => `<option value="${p}">${p}</option>`).join('');
+  const freqs = allData.map(r => parseFloat(r['Frequency (Hz)']) / 1e6).filter(f => !isNaN(f));
+  document.getElementById('f-freq-min').value = Math.floor(Math.min(...freqs));
+  document.getElementById('f-freq-max').value = Math.ceil(Math.max(...freqs));
+  const dates = allData.map(r => r['Timestamp (AUSTRALIA/SYDNEY)'].split(' ')[0]).filter(Boolean).sort();
+  if (dates.length) {
+    document.getElementById('f-date-from').value = dates[0];
+    document.getElementById('f-date-to').value = dates[dates.length - 1];
+  }
+}
+
+function applyFilters() {
+  const name = document.getElementById('f-name').value;
+  const proto = document.getElementById('f-proto').value;
+  const freqMin = parseFloat(document.getElementById('f-freq-min').value) * 1e6 || 0;
+  const freqMax = parseFloat(document.getElementById('f-freq-max').value) * 1e6 || Infinity;
+  const dateFrom = document.getElementById('f-date-from').value;
+  const dateTo = document.getElementById('f-date-to').value;
+  filteredData = allData.filter(r => {
+    if (name && r['Name'] !== name) return false;
+    if (proto && r['Protocol'] !== proto) return false;
+    const freq = parseFloat(r['Frequency (Hz)']);
+    if (!isNaN(freq) && (freq < freqMin || freq > freqMax)) return false;
+    const ts = r['Timestamp (AUSTRALIA/SYDNEY)'] || '';
+    const d = ts.split(' ')[0];
+    if (dateFrom && d < dateFrom) return false;
+    if (dateTo && d > dateTo) return false;
+    return true;
+  });
+  updateAll();
+}
+
+function clearFilters() {
+  filteredData = [...allData];
+  populateFilters();
+  updateAll();
+}
+
+function updateAll() {
+  updateStats();
+  drawCompass();
+  updateTopNames();
+  renderTable();
+  renderCharts();
+  renderLocations();
+  document.getElementById('recordCount').textContent = filteredData.length.toLocaleString() + ' records';
+}
+
+function updateHeader() {
+  const row = allData[0] || {};
+  const lat = row['Latitude'] || '';
+  const lon = row['Longitude'] || '';
+  const alt = row['Altitude'] || '';
+  document.getElementById('sensorBadge').textContent = `Sensor: ${lat}, ${lon}`;
+  document.getElementById('sensorLocation').textContent = `Alt: ${alt}m`;
+  const dates = allData.map(r => r['Timestamp (AUSTRALIA/SYDNEY)'].split(' ')[0]).filter(Boolean).sort();
+  document.getElementById('dateRange').textContent = dates.length ? `${dates[0]} → ${dates[dates.length-1]}` : '';
+}
+
+function updateStats() {
+  const names = new Set(filteredData.map(r => r['Name']));
+  const protos = new Set(filteredData.map(r => r['Protocol']).filter(Boolean));
+  document.getElementById('s-total').textContent = filteredData.length.toLocaleString();
+  document.getElementById('s-names').textContent = names.size;
+  document.getElementById('s-proto').textContent = protos.size;
+  document.getElementById('s-filtered').textContent = (allData.length - filteredData.length).toLocaleString();
+}
+
+function updateTopNames() {
+  const counts = {};
+  filteredData.forEach(r => { const n = r['Name'] || 'Unknown'; counts[n] = (counts[n] || 0) + 1; });
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  const max = sorted[0]?.[1] || 1;
+  const ul = document.getElementById('nameList');
+  ul.innerHTML = sorted.map(([n, c]) => `
+    <li onclick="filterByName('${n}')">
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis">${n}</span>
+      <div class="name-bar-wrap"><div class="name-bar" style="width:${Math.round(c/max*100)}%"></div></div>
+      <span class="name-count">${c}</span>
+    </li>`).join('');
+}
+
+function filterByName(name) {
+  document.getElementById('f-name').value = name;
+  applyFilters();
+}
+
+// COMPASS
+function drawCompass() {
+  const canvas = document.getElementById('compass');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, R = W/2 - 16;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#13161d';
+  ctx.beginPath(); ctx.arc(cx, cy, R+14, 0, Math.PI*2); ctx.fill();
+
+  // Outer ring
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.stroke();
+
+  // Tick marks
+  for (let i = 0; i < 36; i++) {
+    const a = (i * 10 - 90) * Math.PI / 180;
+    const r1 = i % 3 === 0 ? R - 10 : R - 5;
+    ctx.strokeStyle = i % 9 === 0 ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = i % 9 === 0 ? 1.5 : 0.8;
+    ctx.beginPath();
+    ctx.moveTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
+    ctx.lineTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a));
+    ctx.stroke();
+  }
+
+  // Cardinal labels
+  const cardinals = [['N', 0], ['E', 90], ['S', 180], ['W', 270]];
+  ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  cardinals.forEach(([lbl, deg]) => {
+    const a = (deg - 90) * Math.PI / 180;
+    const x = cx + (R - 22) * Math.cos(a), y = cy + (R - 22) * Math.sin(a);
+    ctx.fillStyle = lbl === 'N' ? '#ff4d4d' : 'rgba(255,255,255,0.4)';
+    ctx.fillText(lbl, x, y);
+  });
+
+  // Angle lines from filtered data
+  const angles = filteredData.map(r => {
+    const a = r['Angle of Arrival'];
+    if (!a || a === 'Unknown Angle') return null;
+    return parseFloat(a);
+  }).filter(a => a !== null && !isNaN(a));
+
+  // Draw lines with opacity
+  angles.forEach(deg => {
+    const a = (deg - 90) * Math.PI / 180;
+    ctx.strokeStyle = 'rgba(0,212,170,0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + (R - 8) * Math.cos(a), cy + (R - 8) * Math.sin(a));
+    ctx.stroke();
+  });
+
+  // Density arc sectors
+  const sectorCounts = new Array(36).fill(0);
+  angles.forEach(deg => { const idx = Math.floor(((deg % 360) + 360) % 360 / 10); sectorCounts[idx]++; });
+  const maxSec = Math.max(...sectorCounts, 1);
+  for (let i = 0; i < 36; i++) {
+    if (sectorCounts[i] === 0) continue;
+    const a1 = (i * 10 - 90 - 5) * Math.PI / 180;
+    const a2 = (i * 10 - 90 + 5) * Math.PI / 180;
+    const intensity = sectorCounts[i] / maxSec;
+    ctx.fillStyle = `rgba(0,212,170,${intensity * 0.6})`;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R - 8, a1, a2);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Center dot
+  ctx.fillStyle = '#00d4aa';
+  ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI*2); ctx.fill();
+
+  // Count of known angles
+  ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillText(`${angles.length} bearings`, cx, H - 10);
+}
+
+// TABLE
+function sortBy(col) { if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = false; } renderTable(); }
+
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  const sorted = [...filteredData].sort((a, b) => {
+    let va = a[sortCol] || '', vb = b[sortCol] || '';
+    const na = parseFloat(va), nb = parseFloat(vb);
+    if (!isNaN(na) && !isNaN(nb)) return sortAsc ? na - nb : nb - na;
+    return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
+
+  tbody.innerHTML = sorted.map((r, i) => {
+    const proto = r['Protocol'] || '';
+    const protoClass = proto.replace(/\s/g,'') === 'OS OFDM' ? 'proto-OSOFDM' : `proto-${proto.replace(/\s/g,'')}`;
+    const rssi = parseInt(r['Max Power (RSSI)']) || -120;
+    const rssiPct = Math.max(0, Math.min(100, (rssi + 120) / 80 * 100));
+    const rssiColor = rssi > -70 ? '#00d4aa' : rssi > -90 ? '#ffaa00' : '#ff4d4d';
+    const freqMHz = r['Frequency (Hz)'] ? (parseFloat(r['Frequency (Hz)']) / 1e6).toFixed(0) : '—';
+    const angle = r['Angle of Arrival'] === 'Unknown Angle' ? '—' : (r['Angle of Arrival'] || '—');
+    return `<tr onclick="selectRow(this, ${i})" data-idx="${i}">
+      <td style="color:var(--text3)">${i+1}</td>
+      <td>${(r['Timestamp (AUSTRALIA/SYDNEY)'] || '').replace('T', ' ').substring(0, 19)}</td>
+      <td>${r['Name'] || '—'}</td>
+      <td><span class="protocol-badge ${protoClass}">${proto || '?'}</span></td>
+      <td>${freqMHz}</td>
+      <td>${r['Max Power (RSSI)'] || '—'}<span class="rssi-bar" style="background:${rssiColor};width:${rssiPct*0.4}px"></span></td>
+      <td>${r['Min Power (RSSI)'] || '—'}</td>
+      <td>${r['Detection Count'] || '—'}</td>
+      <td>${angle}</td>
+      <td>${r['Wi-Fi'] || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function selectRow(tr, idx) {
+  document.querySelectorAll('#tableBody tr').forEach(r => r.classList.remove('selected'));
+  tr.classList.add('selected');
+  const sorted = [...filteredData].sort((a, b) => {
+    let va = a[sortCol] || '', vb = b[sortCol] || '';
+    const na = parseFloat(va), nb = parseFloat(vb);
+    if (!isNaN(na) && !isNaN(nb)) return sortAsc ? na - nb : nb - na;
+    return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
+  const r = sorted[idx];
+  if (!r) return;
+  const panel = document.getElementById('detailPanel');
+  panel.classList.remove('hidden');
+  document.getElementById('d-time').textContent = r['Timestamp (AUSTRALIA/SYDNEY)'] || '—';
+  document.getElementById('d-name').textContent = r['Name'] || '—';
+  document.getElementById('d-proto').textContent = r['Protocol'] || '—';
+  const freqMHz = r['Frequency (Hz)'] ? (parseFloat(r['Frequency (Hz)']) / 1e6).toFixed(3) + ' MHz' : '—';
+  document.getElementById('d-freq').textContent = freqMHz;
+  document.getElementById('d-rssi-max').textContent = (r['Max Power (RSSI)'] || '—') + ' dBm';
+  document.getElementById('d-rssi-min').textContent = (r['Min Power (RSSI)'] || '—') + ' dBm';
+  document.getElementById('d-count').textContent = r['Detection Count'] || '—';
+  document.getElementById('d-angle').textContent = r['Angle of Arrival'] || '—';
+  document.getElementById('d-wifi').textContent = r['Wi-Fi'] || '—';
+  document.getElementById('d-mfr').textContent = r['Manufacturer Name'] || '—';
+}
+
+// CHARTS
+const COLORS = ['#00d4aa','#0094ff','#a78bfa','#ffaa00','#ff4d4d','#22d3ee','#f472b6','#4ade80','#fb923c'];
+
+function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; } }
+
+function renderCharts() {
+  renderTimelineChart();
+  renderFreqChart();
+  renderProtoChart();
+  renderRssiChart();
+  renderDeviceChart();
+}
+
+function renderTimelineChart() {
+  destroyChart('chartTimeline');
+  const byHour = {};
+  filteredData.forEach(r => {
+    const ts = r['Timestamp (AUSTRALIA/SYDNEY)'] || '';
+    const h = ts.substring(0, 13);
+    if (h) byHour[h] = (byHour[h] || 0) + 1;
+  });
+  const labels = Object.keys(byHour).sort();
+  const data = labels.map(l => byHour[l]);
+  chartInstances['chartTimeline'] = new Chart(document.getElementById('chartTimeline'), {
+    type: 'line',
+    data: { labels: labels.map(l => l.slice(5)), datasets: [{ label: 'Events', data, borderColor: '#00d4aa', backgroundColor: 'rgba(0,212,170,0.1)', borderWidth: 1.5, pointRadius: 2, fill: true, tension: 0.3 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5a6280', maxRotation: 45, font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: '#5a6280', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+  });
+}
+
+function renderFreqChart() {
+  destroyChart('chartFreq');
+  const freqCounts = {};
+  filteredData.forEach(r => {
+    const f = Math.round(parseFloat(r['Frequency (Hz)']) / 1e6 / 50) * 50;
+    if (!isNaN(f)) freqCounts[f] = (freqCounts[f] || 0) + 1;
+  });
+  const labels = Object.keys(freqCounts).sort((a,b) => a-b);
+  chartInstances['chartFreq'] = new Chart(document.getElementById('chartFreq'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Events', data: labels.map(l => freqCounts[l]), backgroundColor: '#0094ff99', borderColor: '#0094ff', borderWidth: 1 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5a6280', font: { size: 9 }, autoSkip: false, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: '#5a6280', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+  });
+}
+
+function renderProtoChart() {
+  destroyChart('chartProto');
+  const counts = {};
+  filteredData.forEach(r => { const p = r['Protocol'] || 'Unknown'; counts[p] = (counts[p] || 0) + 1; });
+  const labels = Object.keys(counts).sort((a,b) => counts[b]-counts[a]);
+  chartInstances['chartProto'] = new Chart(document.getElementById('chartProto'), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: labels.map(l => counts[l]), backgroundColor: COLORS, borderColor: '#0d0f14', borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'right', labels: { color: '#9098b0', font: { size: 10, family: 'monospace' }, boxWidth: 10, padding: 8 } } } }
+  });
+}
+
+function renderRssiChart() {
+  destroyChart('chartRssi');
+  const buckets = {};
+  for (let i = -120; i <= -30; i += 5) buckets[i] = 0;
+  filteredData.forEach(r => {
+    const rssi = parseInt(r['Max Power (RSSI)']);
+    if (!isNaN(rssi)) { const b = Math.floor(rssi / 5) * 5; if (buckets[b] !== undefined) buckets[b]++; }
+  });
+  const labels = Object.keys(buckets).sort((a,b) => +a - +b);
+  chartInstances['chartRssi'] = new Chart(document.getElementById('chartRssi'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Events', data: labels.map(l => buckets[l]), backgroundColor: labels.map(l => +l > -70 ? '#00d4aa99' : +l > -90 ? '#ffaa0099' : '#ff4d4d99'), borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5a6280', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: '#5a6280', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+  });
+}
+
+function renderDeviceChart() {
+  destroyChart('chartDevices');
+  const counts = {};
+  filteredData.forEach(r => { const n = r['Name'] || 'Unknown'; counts[n] = (counts[n] || 0) + 1; });
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+  const labels = sorted.map(s => s[0]);
+  const data = sorted.map(s => s[1]);
+  const h = Math.max(200, labels.length * 42 + 60);
+  document.getElementById('devChartWrap').style.height = h + 'px';
+  chartInstances['chartDevices'] = new Chart(document.getElementById('chartDevices'), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Events', data, backgroundColor: COLORS.slice(0, labels.length), borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5a6280', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: '#9098b0', font: { size: 10, family: 'monospace' } }, grid: { display: false } } } }
+  });
+}
+
+function renderLocations() {
+  const tbody = document.getElementById('locationBody');
+  const withCoords = filteredData.filter(r => r['Sensor Location URL'] || r['Drone Location URL']);
+  tbody.innerHTML = withCoords.slice(0, 200).map(r => {
+    const lat = r['Latitude'] || '';
+    const lon = r['Longitude'] || '';
+    const dLat = r['Drone Latitude'] || '';
+    const dLon = r['Drone Longitude'] || '';
+    const sensorUrl = r['Sensor Location URL'] || '';
+    const droneUrl = r['Drone Location URL'] || '';
+    const hDist = r['Horizontal Distance'] || '—';
+    const vDist = r['Vertical Distance'] || '—';
+    return `<tr>
+      <td>${(r['Timestamp (AUSTRALIA/SYDNEY)'] || '').substring(0, 19)}</td>
+      <td>${r['Name'] || '—'}</td>
+      <td>${lat ? `${parseFloat(lat).toFixed(5)}, ${parseFloat(lon).toFixed(5)}` : '—'}</td>
+      <td>${r['Altitude'] || '—'}m</td>
+      <td>${dLat ? `${parseFloat(dLat).toFixed(5)}, ${parseFloat(dLon).toFixed(5)}` : '—'}</td>
+      <td>${hDist !== '—' ? Math.round(parseFloat(hDist)) + 'm' : '—'}</td>
+      <td>${vDist !== '—' ? Math.round(parseFloat(vDist)) + 'm' : '—'}</td>
+      <td>${sensorUrl ? `<a class="map-link" href="${sensorUrl}" target="_blank">Sensor ↗</a>` : ''} ${droneUrl ? `<a class="map-link" href="${droneUrl}" target="_blank">Drone ↗</a>` : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('detailPanel').classList.add('hidden');
+}
+</script>
+</body>
+</html>
