@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Detection Log Analyzer</title>
+<title>RF Patrol — Detection Log Analyzer</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
   :root {
@@ -38,10 +38,10 @@
   .sensor-badge { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; font-size: 11px; color: var(--text2); }
 
   /* MAIN LAYOUT */
-  .main { display: grid; grid-template-columns: 280px 1fr; grid-template-rows: auto 1fr; height: calc(100vh - 57px); overflow: hidden; }
+  .main { display: grid; grid-template-columns: 240px 1fr; height: calc(100vh - 57px); overflow: hidden; }
 
   /* SIDEBAR */
-  .sidebar { grid-row: 1 / 3; background: var(--bg2); border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
+  .sidebar { background: var(--bg2); border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
   .sidebar-section { padding: 14px 16px; border-bottom: 1px solid var(--border); }
   .sidebar-section h3 { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; margin-bottom: 10px; }
   
@@ -67,9 +67,28 @@
   .stat-val.danger { color: var(--danger); }
   .stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
 
-  /* COMPASS */
-  .compass-wrap { display: flex; justify-content: center; padding: 10px 0; }
-  canvas#compass { border-radius: 50%; }
+  /* COMPASS HERO */
+  .compass-hero { background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: stretch; gap: 0; }
+  .compass-main { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 24px; flex-shrink: 0; }
+  .compass-main-title { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+  canvas#compass { border-radius: 50%; display: block; }
+  .compass-stats { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px; border-left: 1px solid var(--border); }
+  .compass-stat-row { display: flex; align-items: baseline; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .compass-stat-row:last-child { border-bottom: none; }
+  .compass-stat-val { font-size: 26px; font-weight: 600; min-width: 56px; }
+  .c-green { color: var(--accent); }
+  .c-warn { color: var(--warn); }
+  .c-danger { color: var(--danger); }
+  .c-blue { color: var(--accent2); }
+  .compass-stat-lbl { font-size: 11px; color: var(--text2); }
+  .compass-stat-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
+  .bearing-list { border-left: 1px solid var(--border); overflow-y: auto; padding: 16px; min-width: 200px; }
+  .bearing-list-title { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .bearing-item { display: flex; align-items: center; gap: 8px; font-size: 11px; padding: 3px 0; }
+  .bearing-deg { color: var(--accent); font-weight: 600; min-width: 40px; }
+  .bearing-bar-wrap { flex: 1; background: var(--bg3); border-radius: 2px; height: 4px; }
+  .bearing-bar { height: 100%; background: var(--accent); border-radius: 2px; opacity: 0.7; }
+  .bearing-cnt { color: var(--text3); min-width: 32px; text-align: right; }
 
   /* TOP NAMES */
   .name-list { list-style: none; }
@@ -162,7 +181,7 @@
 <div class="drop-zone hidden" id="dropZone">
   <div class="drop-icon">📡</div>
   <div class="drop-text">Drop CSV log file</div>
-  <div class="drop-sub">detection log (.csv)</div>
+  <div class="drop-sub">RF Patrol detection log (.csv)</div>
 </div>
 
 <div class="header">
@@ -172,7 +191,7 @@
       <path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a14 14 0 0 0 0 17M20.5 3.5a14 14 0 0 1 0 17"/>
     </svg>
   </div>
-  <div class="title">Detection Log Analyzer</div>
+  <div class="title">RF<span>PATROL</span> — Detection Log Analyzer</div>
   <div class="sensor-info" id="sensorInfo" style="display:none">
     <div class="sensor-badge" id="sensorBadge">—</div>
     <div class="sensor-badge" id="sensorLocation">—</div>
@@ -194,13 +213,6 @@
         <div class="stat"><div class="stat-val warn" id="s-names">0</div><div class="stat-lbl">Unique devices</div></div>
         <div class="stat"><div class="stat-val" id="s-proto">0</div><div class="stat-lbl">Protocols</div></div>
         <div class="stat"><div class="stat-val danger" id="s-filtered">0</div><div class="stat-lbl">Filtered rows</div></div>
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <h3>Bearing (Angle of Arrival)</h3>
-      <div class="compass-wrap">
-        <canvas id="compass" width="220" height="220"></canvas>
       </div>
     </div>
 
@@ -251,8 +263,8 @@
           <circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a14 14 0 0 0 0 17M20.5 3.5a14 14 0 0 1 0 17"/>
         </svg>
       </div>
-      <div class="upload-title">Log Analyzer</div>
-      <div class="upload-sub">Load an CSV event log to begin analysis. Supports detection logs from sensors and compatible devices.</div>
+      <div class="upload-title">RF Patrol Log Analyzer</div>
+      <div class="upload-sub">Load an RF Patrol CSV event log to begin analysis. Supports detection logs from RfPatrol Mk2 and compatible devices.</div>
       <div class="upload-btn-wrap">
         <label for="file-input"><span class="upload-btn">Load CSV Log</span></label>
       </div>
@@ -261,7 +273,44 @@
 
     <!-- DATA VIEWS (hidden until loaded) -->
     <div id="dataViews" style="display:none">
-      <div class="topbar">
+      <!-- COMPASS HERO -->
+    <div class="compass-hero" id="compassHero" style="display:none">
+      <div class="compass-main">
+        <div class="compass-main-title">Bearing — Angle of Arrival</div>
+        <canvas id="compass" width="360" height="360"></canvas>
+      </div>
+      <div class="compass-stats" id="compassStats">
+        <div class="compass-stat-row">
+          <div class="compass-stat-val c-green" id="cs-total">0</div>
+          <div><div class="compass-stat-lbl">Total events</div><div class="compass-stat-sub">matching current filter</div></div>
+        </div>
+        <div class="compass-stat-row">
+          <div class="compass-stat-val c-warn" id="cs-bearings">0</div>
+          <div><div class="compass-stat-lbl">Known bearings</div><div class="compass-stat-sub">angle of arrival resolved</div></div>
+        </div>
+        <div class="compass-stat-row">
+          <div class="compass-stat-val c-blue" id="cs-devices">0</div>
+          <div><div class="compass-stat-lbl">Unique devices</div><div class="compass-stat-sub">distinct emitters detected</div></div>
+        </div>
+        <div class="compass-stat-row">
+          <div class="compass-stat-val c-danger" id="cs-peak">—°</div>
+          <div><div class="compass-stat-lbl">Peak bearing</div><div class="compass-stat-sub">highest density direction</div></div>
+        </div>
+        <div class="compass-stat-row">
+          <div class="compass-stat-val" id="cs-freq" style="color:var(--purple);font-size:18px">—</div>
+          <div><div class="compass-stat-lbl">Top frequency</div><div class="compass-stat-sub">most common band (MHz)</div></div>
+        </div>
+        <div class="compass-stat-row">
+          <div class="compass-stat-val" id="cs-rssi" style="color:var(--text2);font-size:18px">—</div>
+          <div><div class="compass-stat-lbl">Avg max RSSI</div><div class="compass-stat-sub">signal strength (dBm)</div></div>
+        </div>
+      </div>
+      <div class="bearing-list" id="bearingList">
+        <div class="bearing-list-title">Top bearings</div>
+      </div>
+    </div>
+
+    <div class="topbar">
         <button class="tab-btn active" onclick="switchTab('charts')" id="tab-charts">Charts</button>
         <button class="tab-btn" onclick="switchTab('table')" id="tab-table">Detection Log</button>
         <button class="tab-btn" onclick="switchTab('location')" id="tab-location">Locations</button>
@@ -398,6 +447,7 @@ function initUI() {
   updateHeader();
   document.getElementById('uploadPrompt').classList.add('hidden');
   document.getElementById('dataViews').style.display = 'block';
+  document.getElementById('compassHero').style.display = 'flex';
   document.getElementById('sidebar').style.display = 'flex';
   document.getElementById('sensorInfo').style.display = 'flex';
   updateAll();
@@ -475,6 +525,40 @@ function updateStats() {
   document.getElementById('s-names').textContent = names.size;
   document.getElementById('s-proto').textContent = protos.size;
   document.getElementById('s-filtered').textContent = (allData.length - filteredData.length).toLocaleString();
+
+  // Compass hero stats
+  const angles = filteredData.map(r => r['Angle of Arrival']).filter(a => a && a !== 'Unknown Angle' && !isNaN(parseFloat(a)));
+  document.getElementById('cs-total').textContent = filteredData.length.toLocaleString();
+  document.getElementById('cs-bearings').textContent = angles.length.toLocaleString();
+  document.getElementById('cs-devices').textContent = names.size;
+
+  // Peak bearing
+  const sectorCounts = {};
+  angles.forEach(a => { const s = Math.round(((parseFloat(a) % 360) + 360) % 360 / 10) * 10 % 360; sectorCounts[s] = (sectorCounts[s] || 0) + 1; });
+  const peakEntry = Object.entries(sectorCounts).sort((a,b) => b[1]-a[1])[0];
+  document.getElementById('cs-peak').textContent = peakEntry ? peakEntry[0] + '°' : '—°';
+
+  // Top freq
+  const freqCounts = {};
+  filteredData.forEach(r => { const f = Math.round(parseFloat(r['Frequency (Hz)']) / 1e6); if (!isNaN(f)) freqCounts[f] = (freqCounts[f] || 0) + 1; });
+  const topFreq = Object.entries(freqCounts).sort((a,b) => b[1]-a[1])[0];
+  document.getElementById('cs-freq').textContent = topFreq ? topFreq[0] + ' MHz' : '—';
+
+  // Avg RSSI
+  const rssiVals = filteredData.map(r => parseInt(r['Max Power (RSSI)'])).filter(v => !isNaN(v));
+  const avgRssi = rssiVals.length ? Math.round(rssiVals.reduce((a,b) => a+b, 0) / rssiVals.length) : null;
+  document.getElementById('cs-rssi').textContent = avgRssi !== null ? avgRssi + ' dBm' : '—';
+
+  // Bearing list
+  const bearingContainer = document.getElementById('bearingList');
+  const sortedBearings = Object.entries(sectorCounts).sort((a,b) => b[1]-a[1]).slice(0, 14);
+  const maxB = sortedBearings[0]?.[1] || 1;
+  bearingContainer.innerHTML = '<div class="bearing-list-title">Top bearings</div>' +
+    sortedBearings.map(([deg, cnt]) => `<div class="bearing-item">
+      <span class="bearing-deg">${deg}°</span>
+      <div class="bearing-bar-wrap"><div class="bearing-bar" style="width:${Math.round(cnt/maxB*100)}%"></div></div>
+      <span class="bearing-cnt">${cnt}</span>
+    </div>`).join('');
 }
 
 function updateTopNames() {
@@ -496,85 +580,117 @@ function filterByName(name) {
   applyFilters();
 }
 
-// COMPASS
 function drawCompass() {
   const canvas = document.getElementById('compass');
   const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, R = W/2 - 16;
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, R = W/2 - 28;
   ctx.clearRect(0, 0, W, H);
 
-  // Background
+  // Outer background ring
   ctx.fillStyle = '#13161d';
-  ctx.beginPath(); ctx.arc(cx, cy, R+14, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, cy, R + 26, 0, Math.PI*2); ctx.fill();
 
-  // Outer ring
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.stroke();
+  // Subtle grid rings
+  [0.25, 0.5, 0.75, 1].forEach(f => {
+    ctx.strokeStyle = `rgba(255,255,255,${f === 1 ? 0.12 : 0.05})`;
+    ctx.lineWidth = f === 1 ? 1 : 0.5;
+    ctx.beginPath(); ctx.arc(cx, cy, R * f, 0, Math.PI*2); ctx.stroke();
+  });
 
-  // Tick marks
+  // Tick marks + degree labels
   for (let i = 0; i < 36; i++) {
-    const a = (i * 10 - 90) * Math.PI / 180;
-    const r1 = i % 3 === 0 ? R - 10 : R - 5;
-    ctx.strokeStyle = i % 9 === 0 ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)';
-    ctx.lineWidth = i % 9 === 0 ? 1.5 : 0.8;
+    const deg = i * 10;
+    const a = (deg - 90) * Math.PI / 180;
+    const isMajor = deg % 90 === 0;
+    const isMed = deg % 30 === 0 && !isMajor;
+    const r1 = isMajor ? R - 22 : isMed ? R - 14 : R - 8;
+    ctx.strokeStyle = isMajor ? 'rgba(255,255,255,0.6)' : isMed ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = isMajor ? 1.5 : 0.8;
     ctx.beginPath();
     ctx.moveTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
     ctx.lineTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a));
     ctx.stroke();
+    // Degree numbers every 30°
+    if (deg % 30 === 0 && !isMajor) {
+      const lr = R + 16;
+      ctx.font = '9px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.fillText(deg + '°', cx + lr * Math.cos(a), cy + lr * Math.sin(a));
+    }
   }
 
   // Cardinal labels
-  const cardinals = [['N', 0], ['E', 90], ['S', 180], ['W', 270]];
-  ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  cardinals.forEach(([lbl, deg]) => {
+  const cardinals = [['N', 0, '#ff4d4d'], ['NE', 45, 'rgba(255,255,255,0.3)'], ['E', 90, 'rgba(255,255,255,0.4)'], ['SE', 135, 'rgba(255,255,255,0.3)'], ['S', 180, 'rgba(255,255,255,0.4)'], ['SW', 225, 'rgba(255,255,255,0.3)'], ['W', 270, 'rgba(255,255,255,0.4)'], ['NW', 315, 'rgba(255,255,255,0.3)']];
+  cardinals.forEach(([lbl, deg, color]) => {
     const a = (deg - 90) * Math.PI / 180;
-    const x = cx + (R - 22) * Math.cos(a), y = cy + (R - 22) * Math.sin(a);
-    ctx.fillStyle = lbl === 'N' ? '#ff4d4d' : 'rgba(255,255,255,0.4)';
-    ctx.fillText(lbl, x, y);
+    const lr = R + (lbl.length === 1 ? 18 : 16);
+    ctx.font = lbl.length === 1 ? 'bold 13px monospace' : '10px monospace';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = color;
+    ctx.fillText(lbl, cx + lr * Math.cos(a), cy + lr * Math.sin(a));
   });
 
-  // Angle lines from filtered data
+  // Bearing data
   const angles = filteredData.map(r => {
     const a = r['Angle of Arrival'];
     if (!a || a === 'Unknown Angle') return null;
     return parseFloat(a);
   }).filter(a => a !== null && !isNaN(a));
 
-  // Draw lines with opacity
-  angles.forEach(deg => {
-    const a = (deg - 90) * Math.PI / 180;
-    ctx.strokeStyle = 'rgba(0,212,170,0.12)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + (R - 8) * Math.cos(a), cy + (R - 8) * Math.sin(a));
-    ctx.stroke();
-  });
+  // Sector density fill
+  const sectorCounts = new Array(360).fill(0);
+  angles.forEach(deg => { const idx = Math.floor(((deg % 360) + 360) % 360); sectorCounts[idx]++; });
+  const smoothed = new Array(360).fill(0);
+  for (let i = 0; i < 360; i++) { for (let d = -8; d <= 8; d++) smoothed[i] += sectorCounts[(i+d+360)%360] * (1 - Math.abs(d)/9); }
+  const maxSm = Math.max(...smoothed, 1);
 
-  // Density arc sectors
-  const sectorCounts = new Array(36).fill(0);
-  angles.forEach(deg => { const idx = Math.floor(((deg % 360) + 360) % 360 / 10); sectorCounts[idx]++; });
-  const maxSec = Math.max(...sectorCounts, 1);
-  for (let i = 0; i < 36; i++) {
-    if (sectorCounts[i] === 0) continue;
-    const a1 = (i * 10 - 90 - 5) * Math.PI / 180;
-    const a2 = (i * 10 - 90 + 5) * Math.PI / 180;
-    const intensity = sectorCounts[i] / maxSec;
-    ctx.fillStyle = `rgba(0,212,170,${intensity * 0.6})`;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, R - 8, a1, a2);
-    ctx.closePath();
-    ctx.fill();
+  for (let i = 0; i < 360; i++) {
+    if (smoothed[i] < 0.1) continue;
+    const a1 = (i - 90 - 0.8) * Math.PI / 180;
+    const a2 = (i - 90 + 0.8) * Math.PI / 180;
+    const intensity = smoothed[i] / maxSm;
+    const rFill = R * 0.92;
+    ctx.fillStyle = `rgba(0,212,170,${intensity * 0.55})`;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, rFill, a1, a2); ctx.closePath(); ctx.fill();
   }
 
-  // Center dot
-  ctx.fillStyle = '#00d4aa';
-  ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI*2); ctx.fill();
+  // Individual bearing lines (limited to 600 for perf)
+  const stride = angles.length > 600 ? Math.ceil(angles.length / 600) : 1;
+  for (let i = 0; i < angles.length; i += stride) {
+    const a = (angles[i] - 90) * Math.PI / 180;
+    ctx.strokeStyle = 'rgba(0,212,170,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * 0.88 * Math.cos(a), cy + R * 0.88 * Math.sin(a)); ctx.stroke();
+  }
 
-  // Count of known angles
-  ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  ctx.fillText(`${angles.length} bearings`, cx, H - 10);
+  // Peak direction bold line
+  const peak = smoothed.indexOf(Math.max(...smoothed));
+  const peakA = (peak - 90) * Math.PI / 180;
+  ctx.strokeStyle = 'rgba(0,212,170,0.9)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * 0.85 * Math.cos(peakA), cy + R * 0.85 * Math.sin(peakA)); ctx.stroke();
+  // Arrow head
+  const arrowLen = 10, arrowW = 5;
+  const ex = cx + R * 0.85 * Math.cos(peakA), ey = cy + R * 0.85 * Math.sin(peakA);
+  ctx.fillStyle = 'rgba(0,212,170,0.9)';
+  ctx.beginPath();
+  ctx.moveTo(ex, ey);
+  ctx.lineTo(ex - arrowLen * Math.cos(peakA) + arrowW * Math.sin(peakA), ey - arrowLen * Math.sin(peakA) - arrowW * Math.cos(peakA));
+  ctx.lineTo(ex - arrowLen * Math.cos(peakA) - arrowW * Math.sin(peakA), ey - arrowLen * Math.sin(peakA) + arrowW * Math.cos(peakA));
+  ctx.closePath(); ctx.fill();
+
+  // Center dot + crosshair
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(cx - R*0.15, cy); ctx.lineTo(cx + R*0.15, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, cy - R*0.15); ctx.lineTo(cx, cy + R*0.15); ctx.stroke();
+  ctx.fillStyle = '#00d4aa';
+  ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#0d0f14';
+  ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
+
+  // Count label
+  ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.fillText(angles.length + ' bearings', cx, H - 8);
 }
 
 // TABLE
