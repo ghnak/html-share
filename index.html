@@ -174,6 +174,77 @@
   .coords-table td { padding: 5px 10px; border-bottom: 1px solid var(--border); color: var(--text2); }
   .map-link { color: var(--accent2); text-decoration: none; font-size: 11px; }
   .map-link:hover { text-decoration: underline; }
+
+  /* MULTI-SELECT DROPDOWN */
+  .ms-wrap { position: relative; }
+  .ms-trigger { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 5px 28px 5px 8px; color: var(--text); font-family: inherit; font-size: 12px; cursor: pointer; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; justify-content: space-between; }
+  .ms-trigger:hover { border-color: var(--border2); }
+  .ms-trigger.open { border-color: var(--accent); }
+  .ms-arrow { flex-shrink: 0; margin-left: 6px; color: var(--text3); font-size: 10px; }
+  .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius); z-index: 50; max-height: 200px; overflow-y: auto; margin-top: 2px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); display: none; }
+  .ms-dropdown.open { display: block; }
+  .ms-option { display: flex; align-items: center; gap: 8px; padding: 6px 10px; cursor: pointer; font-size: 12px; color: var(--text2); }
+  .ms-option:hover { background: var(--bg4); color: var(--text); }
+  .ms-option.selected { color: var(--accent); }
+  .ms-option input[type=checkbox] { accent-color: var(--accent); width: 13px; height: 13px; flex-shrink: 0; cursor: pointer; }
+  .ms-clear { padding: 5px 10px; font-size: 11px; color: var(--text3); cursor: pointer; border-top: 1px solid var(--border); text-align: center; }
+  .ms-clear:hover { color: var(--accent); }
+  .tag-wrap { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; min-height: 0; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(0,212,170,0.12); color: var(--accent); border: 1px solid rgba(0,212,170,0.25); border-radius: 3px; font-size: 10px; padding: 2px 6px; }
+  .tag-x { cursor: pointer; opacity: 0.6; font-size: 12px; line-height: 1; }
+  .tag-x:hover { opacity: 1; }
+
+  /* RF FILTER MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; display: flex; align-items: center; justify-content: center; }
+  .modal-overlay.hidden { display: none; }
+  .modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius2); width: 480px; max-width: 96vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
+  .modal-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn); }
+  .modal-close { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 2px 6px; line-height: 1; }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+  .modal-section { background: var(--bg3); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+  .modal-section-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .modal-section-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .modal-section-body.disabled { opacity: 0.4; pointer-events: none; }
+  .modal-row { display: grid; gap: 10px; }
+  .modal-row.two { grid-template-columns: 1fr 1fr; }
+  .modal-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .modal-lbl { font-size: 10px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; }
+  .modal-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; color: var(--text); font-family: inherit; font-size: 12px; outline: none; }
+  .modal-input:focus { border-color: var(--accent); }
+  .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+  .btn-warn { background: var(--warn); color: #000; border: none; padding: 8px 20px; border-radius: var(--radius); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; letter-spacing: 0.04em; }
+  .btn-warn:hover { opacity: 0.9; }
+  .btn-ghost { background: none; border: 1px solid var(--border2); color: var(--text2); padding: 8px 16px; border-radius: var(--radius); font-family: inherit; font-size: 12px; cursor: pointer; }
+  .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+
+  /* TOGGLE SWITCH */
+  .toggle-label { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; font-size: 12px; color: var(--text2); }
+  .toggle-label input { display: none; }
+  .toggle-track { width: 32px; height: 18px; background: var(--bg4); border-radius: 9px; position: relative; transition: background 0.2s; flex-shrink: 0; border: 1px solid var(--border2); }
+  .toggle-label input:checked + .toggle-track { background: var(--warn); border-color: var(--warn); }
+  .toggle-thumb { position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: var(--text3); border-radius: 50%; transition: left 0.2s, background 0.2s; }
+  .toggle-label input:checked + .toggle-track .toggle-thumb { left: 16px; background: #000; }
+
+  /* BEARING VISUAL IN MODAL */
+  canvas#modalCompass { display: block; margin: 0 auto; }
+
+  /* SAVED FILTERS */
+  .filter-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; margin-bottom: 6px; cursor: pointer; transition: border-color 0.15s; }
+  .filter-card:hover { border-color: var(--border2); }
+  .filter-card.active-filter { border-color: var(--warn); background: rgba(255,170,0,0.06); }
+  .filter-card-name { font-size: 12px; color: var(--text); font-weight: 500; display: flex; align-items: center; justify-content: space-between; }
+  .filter-card-meta { font-size: 10px; color: var(--text3); margin-top: 3px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .filter-tag { background: rgba(255,170,0,0.12); color: var(--warn); border-radius: 2px; padding: 1px 5px; font-size: 10px; }
+  .filter-del { color: var(--text3); font-size: 14px; line-height: 1; padding: 0 2px; cursor: pointer; }
+  .filter-del:hover { color: var(--danger); }
+  .add-filter-btn { width: 100%; padding: 7px; background: none; border: 1px dashed var(--border2); border-radius: var(--radius); color: var(--text3); font-family: inherit; font-size: 11px; cursor: pointer; letter-spacing: 0.04em; margin-top: 4px; }
+  .add-filter-btn:hover { border-color: var(--warn); color: var(--warn); }
+
+  /* COMPASS CLICK HINT */
+  .compass-hint { font-size: 10px; color: var(--text3); text-align: center; margin-top: 6px; }
+  canvas#compass { cursor: crosshair; }
 </style>
 </head>
 <body>
@@ -228,11 +299,25 @@
       </div>
       <div class="filter-row">
         <label class="filter-label">Device name</label>
-        <select id="f-name"><option value="">All devices</option></select>
+        <div class="ms-wrap" id="ms-name-wrap">
+          <div class="ms-trigger" id="ms-name-trigger" onclick="toggleMs('name')">
+            <span id="ms-name-label">All devices</span>
+            <span class="ms-arrow">▾</span>
+          </div>
+          <div class="ms-dropdown" id="ms-name-dd"></div>
+          <div class="tag-wrap" id="ms-name-tags"></div>
+        </div>
       </div>
       <div class="filter-row">
         <label class="filter-label">Protocol</label>
-        <select id="f-proto"><option value="">All protocols</option></select>
+        <div class="ms-wrap" id="ms-proto-wrap">
+          <div class="ms-trigger" id="ms-proto-trigger" onclick="toggleMs('proto')">
+            <span id="ms-proto-label">All protocols</span>
+            <span class="ms-arrow">▾</span>
+          </div>
+          <div class="ms-dropdown" id="ms-proto-dd"></div>
+          <div class="tag-wrap" id="ms-proto-tags"></div>
+        </div>
       </div>
       <div class="filter-row">
         <label class="filter-label">Frequency (MHz)</label>
@@ -246,6 +331,12 @@
         <button class="btn" onclick="applyFilters()">Apply Filters</button>
         <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
       </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>RF Filters</h3>
+      <div id="savedFiltersList"></div>
+      <button class="add-filter-btn" onclick="openFilterModal(null)">+ Add RF Filter</button>
     </div>
 
     <div class="sidebar-section">
@@ -278,6 +369,7 @@
       <div class="compass-main">
         <div class="compass-main-title">Bearing — Angle of Arrival</div>
         <canvas id="compass" width="360" height="360"></canvas>
+        <div class="compass-hint">Click dense area to create RF Filter</div>
       </div>
       <div class="compass-stats" id="compassStats">
         <div class="compass-stat-row">
@@ -395,18 +487,157 @@
   </div>
 </div>
 
+<!-- RF FILTER MODAL -->
+<div class="modal-overlay hidden" id="filterModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add RF Filter</span>
+      <button class="modal-close" onclick="closeFilterModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="modal-lbl">Filter Name</div>
+        <input class="modal-input" id="mf-name" placeholder="e.g. Tower 2390MHz NE">
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-header">
+          <label class="toggle-label">
+            <input type="checkbox" id="mf-freq-on" onchange="toggleModalSection('freq')">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span style="font-size:12px;color:var(--text)">Filter by Frequency</span>
+          </label>
+        </div>
+        <div class="modal-section-body disabled" id="mf-freq-body">
+          <div class="modal-row two">
+            <div>
+              <div class="modal-lbl">Band</div>
+              <select class="modal-input" id="mf-band" onchange="bandPreset()">
+                <option value="">Custom</option>
+                <option value="433">433 MHz</option>
+                <option value="868">868 MHz</option>
+                <option value="915">915 MHz</option>
+                <option value="2400">2.4 GHz</option>
+                <option value="5800">5.8 GHz</option>
+              </select>
+            </div>
+            <div>
+              <div class="modal-lbl">Center Frequency (MHz)</div>
+              <input class="modal-input" id="mf-freq" type="number" placeholder="e.g. 2390">
+            </div>
+          </div>
+          <div>
+            <div class="modal-lbl">Tolerance ± (MHz)</div>
+            <input class="modal-input" id="mf-freq-tol" type="number" value="5" placeholder="5">
+          </div>
+          <div id="mf-freq-preview" style="font-size:10px;color:var(--text3);padding:4px 0"></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-header">
+          <label class="toggle-label">
+            <input type="checkbox" id="mf-bearing-on" onchange="toggleModalSection('bearing')">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span style="font-size:12px;color:var(--text)">Filter by Bearing</span>
+          </label>
+        </div>
+        <div class="modal-section-body disabled" id="mf-bearing-body">
+          <div class="modal-row two">
+            <div>
+              <div class="modal-lbl">Bearing (°)</div>
+              <input class="modal-input" id="mf-bearing" type="number" min="0" max="359" placeholder="0" oninput="updateModalCompass()">
+            </div>
+            <div>
+              <div class="modal-lbl">Tolerance ± (°)</div>
+              <input class="modal-input" id="mf-bearing-tol" type="number" min="1" max="180" value="15" placeholder="15" oninput="updateModalCompass()">
+            </div>
+          </div>
+          <canvas id="modalCompass" width="200" height="200"></canvas>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-header">
+          <label class="toggle-label">
+            <input type="checkbox" id="mf-vendor-on" onchange="toggleModalSection('vendor')">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span style="font-size:12px;color:var(--text)">Filter by Vendor and Protocol</span>
+          </label>
+        </div>
+        <div class="modal-section-body disabled" id="mf-vendor-body">
+          <div class="modal-row two">
+            <div>
+              <div class="modal-lbl">Vendor / Device</div>
+              <select class="modal-input" id="mf-vendor">
+                <option value="">Select...</option>
+              </select>
+            </div>
+            <div>
+              <div class="modal-lbl">Protocol</div>
+              <select class="modal-input" id="mf-protocol">
+                <option value="">Select...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-header">
+          <label class="toggle-label">
+            <input type="checkbox" id="mf-timeout-on" onchange="toggleModalSection('timeout')">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span style="font-size:12px;color:var(--text)">Filter Timeout</span>
+          </label>
+        </div>
+        <div class="modal-section-body disabled" id="mf-timeout-body">
+          <div>
+            <div class="modal-lbl">Duration (Hours)</div>
+            <input class="modal-input" id="mf-timeout" type="number" min="1" value="2" placeholder="2">
+          </div>
+          <div style="font-size:10px;color:var(--text3)">Filter will automatically expire after the specified duration.</div>
+        </div>
+      </div>
+
+      <div style="font-size:10px;color:var(--text3);padding:4px 0;border-top:1px solid var(--border);padding-top:10px">
+        <span id="mf-match-count" style="color:var(--warn)">—</span> events in current log would be excluded by this filter.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-warn" onclick="saveFilter()">SUBMIT</button>
+      <button class="btn-ghost" onclick="closeFilterModal()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let allData = [];
 let filteredData = [];
 let chartInstances = {};
 let sortCol = 'Timestamp (AUSTRALIA/SYDNEY)';
 let sortAsc = false;
+let savedFilters = [];
+let editingFilterIdx = null;
+
+// Multi-select state
+const msState = { name: new Set(), proto: new Set() };
 
 // DRAG & DROP
 document.addEventListener('dragover', e => { e.preventDefault(); document.getElementById('dropZone').classList.remove('hidden'); });
 document.addEventListener('dragleave', e => { if (e.clientX === 0 && e.clientY === 0) document.getElementById('dropZone').classList.add('hidden'); });
 document.addEventListener('drop', e => { e.preventDefault(); document.getElementById('dropZone').classList.add('hidden'); const file = e.dataTransfer.files[0]; if (file) handleFile(file); });
 document.getElementById('file-input').addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', e => {
+  ['name','proto'].forEach(k => {
+    const wrap = document.getElementById(`ms-${k}-wrap`);
+    if (wrap && !wrap.contains(e.target)) closeMsDropdown(k);
+  });
+  const modal = document.getElementById('filterModal');
+  if (e.target === modal) closeFilterModal();
+});
 
 function handleFile(file) {
   const reader = new FileReader();
@@ -429,9 +660,7 @@ function parseCSV(text) {
 }
 
 function splitCSVLine(line) {
-  const result = [];
-  let cur = '';
-  let inQ = false;
+  const result = []; let cur = ''; let inQ = false;
   for (let i = 0; i < line.length; i++) {
     if (line[i] === '"') { inQ = !inQ; }
     else if (line[i] === ',' && !inQ) { result.push(cur); cur = ''; }
@@ -451,35 +680,91 @@ function initUI() {
   document.getElementById('sidebar').style.display = 'flex';
   document.getElementById('sensorInfo').style.display = 'flex';
   updateAll();
+  // Compass click to open filter modal
+  document.getElementById('compass').addEventListener('click', onCompassClick);
 }
 
+// ─── MULTI-SELECT ─────────────────────────────────────────────────────────────
 function populateFilters() {
   const names = [...new Set(allData.map(r => r['Name']).filter(Boolean))].sort();
   const protos = [...new Set(allData.map(r => r['Protocol']).filter(Boolean))].sort();
-  const nSel = document.getElementById('f-name');
-  const pSel = document.getElementById('f-proto');
-  nSel.innerHTML = '<option value="">All devices</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
-  pSel.innerHTML = '<option value="">All protocols</option>' + protos.map(p => `<option value="${p}">${p}</option>`).join('');
+  buildMsDropdown('name', names, 'All devices');
+  buildMsDropdown('proto', protos, 'All protocols');
   const freqs = allData.map(r => parseFloat(r['Frequency (Hz)']) / 1e6).filter(f => !isNaN(f));
   document.getElementById('f-freq-min').value = Math.floor(Math.min(...freqs));
   document.getElementById('f-freq-max').value = Math.ceil(Math.max(...freqs));
-  const dates = allData.map(r => r['Timestamp (AUSTRALIA/SYDNEY)'].split(' ')[0]).filter(Boolean).sort();
-  if (dates.length) {
-    document.getElementById('f-date-from').value = dates[0];
-    document.getElementById('f-date-to').value = dates[dates.length - 1];
-  }
+  const dates = allData.map(r => (r['Timestamp (AUSTRALIA/SYDNEY)'] || '').split(' ')[0]).filter(Boolean).sort();
+  if (dates.length) { document.getElementById('f-date-from').value = dates[0]; document.getElementById('f-date-to').value = dates[dates.length-1]; }
 }
 
+function buildMsDropdown(key, options, allLabel) {
+  const dd = document.getElementById(`ms-${key}-dd`);
+  dd.innerHTML = options.map(o => `
+    <div class="ms-option ${msState[key].has(o) ? 'selected' : ''}" onclick="toggleMsOption('${key}','${o.replace(/'/g,"\\'")}',this)">
+      <input type="checkbox" ${msState[key].has(o) ? 'checked' : ''} onclick="event.stopPropagation()">
+      <span>${o}</span>
+    </div>`).join('') +
+    `<div class="ms-clear" onclick="clearMs('${key}')">Clear selection</div>`;
+  renderMsTags(key, allLabel);
+}
+
+function toggleMs(key) {
+  const dd = document.getElementById(`ms-${key}-dd`);
+  const trigger = document.getElementById(`ms-${key}-trigger`);
+  const isOpen = dd.classList.contains('open');
+  // Close the other
+  ['name','proto'].forEach(k => { if (k !== key) { document.getElementById(`ms-${k}-dd`).classList.remove('open'); document.getElementById(`ms-${k}-trigger`).classList.remove('open'); } });
+  dd.classList.toggle('open', !isOpen);
+  trigger.classList.toggle('open', !isOpen);
+}
+
+function closeMsDropdown(key) {
+  document.getElementById(`ms-${key}-dd`).classList.remove('open');
+  document.getElementById(`ms-${key}-trigger`).classList.remove('open');
+}
+
+function toggleMsOption(key, val, el) {
+  if (msState[key].has(val)) { msState[key].delete(val); el.classList.remove('selected'); el.querySelector('input').checked = false; }
+  else { msState[key].add(val); el.classList.add('selected'); el.querySelector('input').checked = true; }
+  const allLabel = key === 'name' ? 'All devices' : 'All protocols';
+  renderMsTags(key, allLabel);
+}
+
+function clearMs(key) {
+  msState[key].clear();
+  const allLabel = key === 'name' ? 'All devices' : 'All protocols';
+  buildMsDropdown(key, [...new Set(allData.map(r => r[key === 'name' ? 'Name' : 'Protocol']).filter(Boolean))].sort(), allLabel);
+}
+
+function removeTag(key, val) {
+  msState[key].delete(val);
+  const allLabel = key === 'name' ? 'All devices' : 'All protocols';
+  renderMsTags(key, allLabel);
+  // Uncheck in dropdown
+  document.querySelectorAll(`#ms-${key}-dd .ms-option`).forEach(el => {
+    if (el.querySelector('span')?.textContent === val) { el.classList.remove('selected'); el.querySelector('input').checked = false; }
+  });
+}
+
+function renderMsTags(key, allLabel) {
+  const sel = [...msState[key]];
+  const labelEl = document.getElementById(`ms-${key}-label`);
+  const tagsEl = document.getElementById(`ms-${key}-tags`);
+  labelEl.textContent = sel.length === 0 ? allLabel : sel.length === 1 ? sel[0] : `${sel.length} selected`;
+  tagsEl.innerHTML = sel.map(v => `<span class="tag">${v}<span class="tag-x" onclick="removeTag('${key}','${v.replace(/'/g,"\\'")}')">×</span></span>`).join('');
+}
+
+// ─── FILTERS ──────────────────────────────────────────────────────────────────
 function applyFilters() {
-  const name = document.getElementById('f-name').value;
-  const proto = document.getElementById('f-proto').value;
+  const names = msState.name;
+  const protos = msState.proto;
   const freqMin = parseFloat(document.getElementById('f-freq-min').value) * 1e6 || 0;
   const freqMax = parseFloat(document.getElementById('f-freq-max').value) * 1e6 || Infinity;
   const dateFrom = document.getElementById('f-date-from').value;
   const dateTo = document.getElementById('f-date-to').value;
   filteredData = allData.filter(r => {
-    if (name && r['Name'] !== name) return false;
-    if (proto && r['Protocol'] !== proto) return false;
+    if (names.size > 0 && !names.has(r['Name'])) return false;
+    if (protos.size > 0 && !protos.has(r['Protocol'])) return false;
     const freq = parseFloat(r['Frequency (Hz)']);
     if (!isNaN(freq) && (freq < freqMin || freq > freqMax)) return false;
     const ts = r['Timestamp (AUSTRALIA/SYDNEY)'] || '';
@@ -492,6 +777,7 @@ function applyFilters() {
 }
 
 function clearFilters() {
+  msState.name.clear(); msState.proto.clear();
   filteredData = [...allData];
   populateFilters();
   updateAll();
@@ -504,17 +790,16 @@ function updateAll() {
   renderTable();
   renderCharts();
   renderLocations();
+  renderSavedFilters();
   document.getElementById('recordCount').textContent = filteredData.length.toLocaleString() + ' records';
 }
 
 function updateHeader() {
   const row = allData[0] || {};
-  const lat = row['Latitude'] || '';
-  const lon = row['Longitude'] || '';
-  const alt = row['Altitude'] || '';
+  const lat = row['Latitude'] || ''; const lon = row['Longitude'] || ''; const alt = row['Altitude'] || '';
   document.getElementById('sensorBadge').textContent = `Sensor: ${lat}, ${lon}`;
   document.getElementById('sensorLocation').textContent = `Alt: ${alt}m`;
-  const dates = allData.map(r => r['Timestamp (AUSTRALIA/SYDNEY)'].split(' ')[0]).filter(Boolean).sort();
+  const dates = allData.map(r => (r['Timestamp (AUSTRALIA/SYDNEY)'] || '').split(' ')[0]).filter(Boolean).sort();
   document.getElementById('dateRange').textContent = dates.length ? `${dates[0]} → ${dates[dates.length-1]}` : '';
 }
 
@@ -526,35 +811,30 @@ function updateStats() {
   document.getElementById('s-proto').textContent = protos.size;
   document.getElementById('s-filtered').textContent = (allData.length - filteredData.length).toLocaleString();
 
-  // Compass hero stats
   const angles = filteredData.map(r => r['Angle of Arrival']).filter(a => a && a !== 'Unknown Angle' && !isNaN(parseFloat(a)));
   document.getElementById('cs-total').textContent = filteredData.length.toLocaleString();
   document.getElementById('cs-bearings').textContent = angles.length.toLocaleString();
   document.getElementById('cs-devices').textContent = names.size;
 
-  // Peak bearing
   const sectorCounts = {};
   angles.forEach(a => { const s = Math.round(((parseFloat(a) % 360) + 360) % 360 / 10) * 10 % 360; sectorCounts[s] = (sectorCounts[s] || 0) + 1; });
   const peakEntry = Object.entries(sectorCounts).sort((a,b) => b[1]-a[1])[0];
   document.getElementById('cs-peak').textContent = peakEntry ? peakEntry[0] + '°' : '—°';
 
-  // Top freq
   const freqCounts = {};
   filteredData.forEach(r => { const f = Math.round(parseFloat(r['Frequency (Hz)']) / 1e6); if (!isNaN(f)) freqCounts[f] = (freqCounts[f] || 0) + 1; });
   const topFreq = Object.entries(freqCounts).sort((a,b) => b[1]-a[1])[0];
   document.getElementById('cs-freq').textContent = topFreq ? topFreq[0] + ' MHz' : '—';
 
-  // Avg RSSI
   const rssiVals = filteredData.map(r => parseInt(r['Max Power (RSSI)'])).filter(v => !isNaN(v));
   const avgRssi = rssiVals.length ? Math.round(rssiVals.reduce((a,b) => a+b, 0) / rssiVals.length) : null;
   document.getElementById('cs-rssi').textContent = avgRssi !== null ? avgRssi + ' dBm' : '—';
 
-  // Bearing list
   const bearingContainer = document.getElementById('bearingList');
   const sortedBearings = Object.entries(sectorCounts).sort((a,b) => b[1]-a[1]).slice(0, 14);
   const maxB = sortedBearings[0]?.[1] || 1;
   bearingContainer.innerHTML = '<div class="bearing-list-title">Top bearings</div>' +
-    sortedBearings.map(([deg, cnt]) => `<div class="bearing-item">
+    sortedBearings.map(([deg, cnt]) => `<div class="bearing-item" onclick="openFilterFromBearing(${deg})" style="cursor:pointer" title="Click to create filter at ${deg}°">
       <span class="bearing-deg">${deg}°</span>
       <div class="bearing-bar-wrap"><div class="bearing-bar" style="width:${Math.round(cnt/maxB*100)}%"></div></div>
       <span class="bearing-cnt">${cnt}</span>
@@ -568,7 +848,7 @@ function updateTopNames() {
   const max = sorted[0]?.[1] || 1;
   const ul = document.getElementById('nameList');
   ul.innerHTML = sorted.map(([n, c]) => `
-    <li onclick="filterByName('${n}')">
+    <li onclick="filterByName('${n.replace(/'/g,"\\'")}')">
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis">${n}</span>
       <div class="name-bar-wrap"><div class="name-bar" style="width:${Math.round(c/max*100)}%"></div></div>
       <span class="name-count">${c}</span>
@@ -576,9 +856,13 @@ function updateTopNames() {
 }
 
 function filterByName(name) {
-  document.getElementById('f-name').value = name;
+  msState.name.clear(); msState.name.add(name);
+  buildMsDropdown('name', [...new Set(allData.map(r => r['Name']).filter(Boolean))].sort(), 'All devices');
   applyFilters();
 }
+
+// ─── COMPASS ──────────────────────────────────────────────────────────────────
+let lastSmoothed = new Array(360).fill(0);
 
 function drawCompass() {
   const canvas = document.getElementById('compass');
@@ -586,114 +870,299 @@ function drawCompass() {
   const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, R = W/2 - 28;
   ctx.clearRect(0, 0, W, H);
 
-  // Outer background ring
   ctx.fillStyle = '#13161d';
   ctx.beginPath(); ctx.arc(cx, cy, R + 26, 0, Math.PI*2); ctx.fill();
 
-  // Subtle grid rings
   [0.25, 0.5, 0.75, 1].forEach(f => {
     ctx.strokeStyle = `rgba(255,255,255,${f === 1 ? 0.12 : 0.05})`;
     ctx.lineWidth = f === 1 ? 1 : 0.5;
     ctx.beginPath(); ctx.arc(cx, cy, R * f, 0, Math.PI*2); ctx.stroke();
   });
 
-  // Tick marks + degree labels
   for (let i = 0; i < 36; i++) {
-    const deg = i * 10;
-    const a = (deg - 90) * Math.PI / 180;
-    const isMajor = deg % 90 === 0;
-    const isMed = deg % 30 === 0 && !isMajor;
+    const deg = i * 10; const a = (deg - 90) * Math.PI / 180;
+    const isMajor = deg % 90 === 0; const isMed = deg % 30 === 0 && !isMajor;
     const r1 = isMajor ? R - 22 : isMed ? R - 14 : R - 8;
     ctx.strokeStyle = isMajor ? 'rgba(255,255,255,0.6)' : isMed ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)';
     ctx.lineWidth = isMajor ? 1.5 : 0.8;
-    ctx.beginPath();
-    ctx.moveTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
-    ctx.lineTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a));
-    ctx.stroke();
-    // Degree numbers every 30°
+    ctx.beginPath(); ctx.moveTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); ctx.lineTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a)); ctx.stroke();
     if (deg % 30 === 0 && !isMajor) {
-      const lr = R + 16;
-      ctx.font = '9px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const lr = R + 16; ctx.font = '9px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillStyle = 'rgba(255,255,255,0.25)';
       ctx.fillText(deg + '°', cx + lr * Math.cos(a), cy + lr * Math.sin(a));
     }
   }
 
-  // Cardinal labels
   const cardinals = [['N', 0, '#ff4d4d'], ['NE', 45, 'rgba(255,255,255,0.3)'], ['E', 90, 'rgba(255,255,255,0.4)'], ['SE', 135, 'rgba(255,255,255,0.3)'], ['S', 180, 'rgba(255,255,255,0.4)'], ['SW', 225, 'rgba(255,255,255,0.3)'], ['W', 270, 'rgba(255,255,255,0.4)'], ['NW', 315, 'rgba(255,255,255,0.3)']];
   cardinals.forEach(([lbl, deg, color]) => {
-    const a = (deg - 90) * Math.PI / 180;
-    const lr = R + (lbl.length === 1 ? 18 : 16);
+    const a = (deg - 90) * Math.PI / 180; const lr = R + (lbl.length === 1 ? 18 : 16);
     ctx.font = lbl.length === 1 ? 'bold 13px monospace' : '10px monospace';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = color;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = color;
     ctx.fillText(lbl, cx + lr * Math.cos(a), cy + lr * Math.sin(a));
   });
 
-  // Bearing data
-  const angles = filteredData.map(r => {
-    const a = r['Angle of Arrival'];
-    if (!a || a === 'Unknown Angle') return null;
-    return parseFloat(a);
-  }).filter(a => a !== null && !isNaN(a));
+  const angles = filteredData.map(r => { const a = r['Angle of Arrival']; if (!a || a === 'Unknown Angle') return null; return parseFloat(a); }).filter(a => a !== null && !isNaN(a));
 
-  // Sector density fill
   const sectorCounts = new Array(360).fill(0);
   angles.forEach(deg => { const idx = Math.floor(((deg % 360) + 360) % 360); sectorCounts[idx]++; });
   const smoothed = new Array(360).fill(0);
   for (let i = 0; i < 360; i++) { for (let d = -8; d <= 8; d++) smoothed[i] += sectorCounts[(i+d+360)%360] * (1 - Math.abs(d)/9); }
   const maxSm = Math.max(...smoothed, 1);
+  lastSmoothed = smoothed;
+
+  // Draw saved filter zones as orange arcs
+  savedFilters.forEach(f => {
+    if (f.bearingOn && f.bearing !== '') {
+      const bDeg = parseFloat(f.bearing); const bTol = parseFloat(f.bearingTol) || 15;
+      const a1 = (bDeg - bTol - 90) * Math.PI / 180; const a2 = (bDeg + bTol - 90) * Math.PI / 180;
+      ctx.fillStyle = 'rgba(255,170,0,0.12)';
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R * 0.92, a1, a2); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,170,0,0.4)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R * 0.92, a1, a2); ctx.closePath(); ctx.stroke();
+    }
+  });
 
   for (let i = 0; i < 360; i++) {
     if (smoothed[i] < 0.1) continue;
-    const a1 = (i - 90 - 0.8) * Math.PI / 180;
-    const a2 = (i - 90 + 0.8) * Math.PI / 180;
-    const intensity = smoothed[i] / maxSm;
-    const rFill = R * 0.92;
+    const a1 = (i - 90 - 0.8) * Math.PI / 180; const a2 = (i - 90 + 0.8) * Math.PI / 180;
+    const intensity = smoothed[i] / maxSm; const rFill = R * 0.92;
     ctx.fillStyle = `rgba(0,212,170,${intensity * 0.55})`;
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, rFill, a1, a2); ctx.closePath(); ctx.fill();
   }
 
-  // Individual bearing lines (limited to 600 for perf)
   const stride = angles.length > 600 ? Math.ceil(angles.length / 600) : 1;
   for (let i = 0; i < angles.length; i += stride) {
     const a = (angles[i] - 90) * Math.PI / 180;
-    ctx.strokeStyle = 'rgba(0,212,170,0.08)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(0,212,170,0.08)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * 0.88 * Math.cos(a), cy + R * 0.88 * Math.sin(a)); ctx.stroke();
   }
 
-  // Peak direction bold line
   const peak = smoothed.indexOf(Math.max(...smoothed));
   const peakA = (peak - 90) * Math.PI / 180;
-  ctx.strokeStyle = 'rgba(0,212,170,0.9)';
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'rgba(0,212,170,0.9)'; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R * 0.85 * Math.cos(peakA), cy + R * 0.85 * Math.sin(peakA)); ctx.stroke();
-  // Arrow head
   const arrowLen = 10, arrowW = 5;
   const ex = cx + R * 0.85 * Math.cos(peakA), ey = cy + R * 0.85 * Math.sin(peakA);
   ctx.fillStyle = 'rgba(0,212,170,0.9)';
-  ctx.beginPath();
-  ctx.moveTo(ex, ey);
-  ctx.lineTo(ex - arrowLen * Math.cos(peakA) + arrowW * Math.sin(peakA), ey - arrowLen * Math.sin(peakA) - arrowW * Math.cos(peakA));
-  ctx.lineTo(ex - arrowLen * Math.cos(peakA) - arrowW * Math.sin(peakA), ey - arrowLen * Math.sin(peakA) + arrowW * Math.cos(peakA));
-  ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex - arrowLen * Math.cos(peakA) + arrowW * Math.sin(peakA), ey - arrowLen * Math.sin(peakA) - arrowW * Math.cos(peakA)); ctx.lineTo(ex - arrowLen * Math.cos(peakA) - arrowW * Math.sin(peakA), ey - arrowLen * Math.sin(peakA) + arrowW * Math.cos(peakA)); ctx.closePath(); ctx.fill();
 
-  // Center dot + crosshair
   ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 0.5;
   ctx.beginPath(); ctx.moveTo(cx - R*0.15, cy); ctx.lineTo(cx + R*0.15, cy); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx, cy - R*0.15); ctx.lineTo(cx, cy + R*0.15); ctx.stroke();
-  ctx.fillStyle = '#00d4aa';
-  ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#0d0f14';
-  ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
-
-  // Count label
+  ctx.fillStyle = '#00d4aa'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#0d0f14'; ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
   ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.25)';
   ctx.fillText(angles.length + ' bearings', cx, H - 8);
 }
 
-// TABLE
+function onCompassClick(e) {
+  const canvas = document.getElementById('compass');
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX - canvas.width / 2;
+  const y = (e.clientY - rect.top) * scaleY - canvas.height / 2;
+  const dist = Math.sqrt(x*x + y*y);
+  if (dist < 20) return;
+  let deg = Math.round(Math.atan2(y, x) * 180 / Math.PI + 90);
+  if (deg < 0) deg += 360;
+  deg = deg % 360;
+  openFilterFromBearing(deg);
+}
+
+function openFilterFromBearing(deg) {
+  openFilterModal(null);
+  document.getElementById('mf-bearing').value = deg;
+  document.getElementById('mf-bearing-on').checked = true;
+  toggleModalSection('bearing');
+  // Try to pre-fill freq from most common freq at this bearing ± 20°
+  const nearAngles = filteredData.filter(r => {
+    const a = parseFloat(r['Angle of Arrival']); if (isNaN(a)) return false;
+    const diff = Math.abs(((a - deg + 540) % 360) - 180); return diff <= 20;
+  });
+  if (nearAngles.length > 0) {
+    const freqMap = {};
+    nearAngles.forEach(r => { const f = Math.round(parseFloat(r['Frequency (Hz)'])/1e6); if (!isNaN(f)) freqMap[f] = (freqMap[f]||0)+1; });
+    const topF = Object.entries(freqMap).sort((a,b) => b[1]-a[1])[0];
+    if (topF) { document.getElementById('mf-freq').value = topF[0]; document.getElementById('mf-freq-on').checked = true; toggleModalSection('freq'); }
+    // Top vendor
+    const vendMap = {};
+    nearAngles.forEach(r => { const v = r['Name']||''; if (v) vendMap[v] = (vendMap[v]||0)+1; });
+    const topV = Object.entries(vendMap).sort((a,b) => b[1]-a[1])[0];
+    if (topV) { const sel = document.getElementById('mf-vendor'); for (let o of sel.options) if (o.value === topV[0]) { o.selected = true; break; } }
+    // Auto filter name suggestion
+    document.getElementById('mf-name').value = `Filter ${deg}° ${topF?topF[0]+'MHz':''}`.trim();
+  }
+  updateModalCompass();
+  updateFilterMatchCount();
+}
+
+// ─── RF FILTER MODAL ──────────────────────────────────────────────────────────
+function openFilterModal(idx) {
+  editingFilterIdx = idx;
+  const modal = document.getElementById('filterModal');
+  if (idx !== null && savedFilters[idx]) {
+    const f = savedFilters[idx];
+    document.getElementById('mf-name').value = f.name;
+    document.getElementById('mf-freq-on').checked = f.freqOn;
+    document.getElementById('mf-freq').value = f.freq || '';
+    document.getElementById('mf-freq-tol').value = f.freqTol || 5;
+    document.getElementById('mf-band').value = f.band || '';
+    document.getElementById('mf-bearing-on').checked = f.bearingOn;
+    document.getElementById('mf-bearing').value = f.bearing || '';
+    document.getElementById('mf-bearing-tol').value = f.bearingTol || 15;
+    document.getElementById('mf-vendor-on').checked = f.vendorOn;
+    document.getElementById('mf-timeout-on').checked = f.timeoutOn;
+    document.getElementById('mf-timeout').value = f.timeout || 2;
+    ['freq','bearing','vendor','timeout'].forEach(toggleModalSection);
+  } else {
+    document.getElementById('mf-name').value = '';
+    ['mf-freq-on','mf-bearing-on','mf-vendor-on','mf-timeout-on'].forEach(id => document.getElementById(id).checked = false);
+    ['freq','bearing','vendor','timeout'].forEach(k => { document.getElementById(`mf-${k}-body`).classList.add('disabled'); });
+  }
+  // Populate vendor / protocol dropdowns from loaded data
+  const vendors = [...new Set(allData.map(r => r['Name']).filter(Boolean))].sort();
+  const protocols = [...new Set(allData.map(r => r['Protocol']).filter(Boolean))].sort();
+  document.getElementById('mf-vendor').innerHTML = '<option value="">Select...</option>' + vendors.map(v => `<option value="${v}">${v}</option>`).join('');
+  document.getElementById('mf-protocol').innerHTML = '<option value="">Select...</option>' + protocols.map(p => `<option value="${p}">${p}</option>`).join('');
+  modal.classList.remove('hidden');
+  updateModalCompass();
+  updateFilterMatchCount();
+}
+
+function closeFilterModal() {
+  document.getElementById('filterModal').classList.add('hidden');
+  editingFilterIdx = null;
+}
+
+function toggleModalSection(key) {
+  const on = document.getElementById(`mf-${key}-on`).checked;
+  const body = document.getElementById(`mf-${key}-body`);
+  if (on) body.classList.remove('disabled'); else body.classList.add('disabled');
+  if (key === 'bearing') updateModalCompass();
+  if (key === 'freq') updateFreqPreview();
+  updateFilterMatchCount();
+}
+
+function bandPreset() {
+  const v = document.getElementById('mf-band').value;
+  if (v) { document.getElementById('mf-freq').value = v; updateFreqPreview(); }
+}
+
+function updateFreqPreview() {
+  const f = parseFloat(document.getElementById('mf-freq').value);
+  const tol = parseFloat(document.getElementById('mf-freq-tol').value) || 5;
+  const el = document.getElementById('mf-freq-preview');
+  if (!isNaN(f)) el.textContent = `Range: ${(f-tol).toFixed(1)} – ${(f+tol).toFixed(1)} MHz`;
+  else el.textContent = '';
+}
+
+function updateModalCompass() {
+  const canvas = document.getElementById('modalCompass');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, R = W/2 - 14;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0d0f14'; ctx.beginPath(); ctx.arc(cx, cy, R+12, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.stroke();
+  for (let i = 0; i < 36; i++) {
+    const a = (i*10-90)*Math.PI/180; const r1 = i%9===0 ? R-8 : R-4;
+    ctx.strokeStyle = i%9===0?'rgba(255,255,255,0.4)':'rgba(255,255,255,0.1)'; ctx.lineWidth=0.8;
+    ctx.beginPath(); ctx.moveTo(cx+R*Math.cos(a),cy+R*Math.sin(a)); ctx.lineTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a)); ctx.stroke();
+  }
+  [['N',0,'#ff4d4d'],['E',90,'rgba(255,255,255,0.4)'],['S',180,'rgba(255,255,255,0.4)'],['W',270,'rgba(255,255,255,0.4)']].forEach(([l,d,c]) => {
+    const a=(d-90)*Math.PI/180; ctx.font='9px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle=c;
+    ctx.fillText(l, cx+(R-10)*Math.cos(a), cy+(R-10)*Math.sin(a));
+  });
+  const on = document.getElementById('mf-bearing-on').checked;
+  const bDeg = parseFloat(document.getElementById('mf-bearing').value);
+  const bTol = parseFloat(document.getElementById('mf-bearing-tol').value) || 15;
+  if (on && !isNaN(bDeg)) {
+    const a1=(bDeg-bTol-90)*Math.PI/180, a2=(bDeg+bTol-90)*Math.PI/180;
+    ctx.fillStyle='rgba(255,170,0,0.2)'; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R*0.9,a1,a2); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='rgba(255,170,0,0.8)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R*0.9,a1,a2); ctx.closePath(); ctx.stroke();
+    const a=(bDeg-90)*Math.PI/180;
+    ctx.strokeStyle='#ffaa00'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R*0.85*Math.cos(a),cy+R*0.85*Math.sin(a)); ctx.stroke();
+    ctx.fillStyle='#ffaa00'; ctx.beginPath(); ctx.arc(cx+R*0.85*Math.cos(a),cy+R*0.85*Math.sin(a),4,0,Math.PI*2); ctx.fill();
+  }
+  ctx.fillStyle='#00d4aa'; ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2); ctx.fill();
+}
+
+function updateFilterMatchCount() {
+  const freqOn = document.getElementById('mf-freq-on').checked;
+  const bearingOn = document.getElementById('mf-bearing-on').checked;
+  const vendorOn = document.getElementById('mf-vendor-on').checked;
+  const freq = parseFloat(document.getElementById('mf-freq').value);
+  const freqTol = parseFloat(document.getElementById('mf-freq-tol').value) || 5;
+  const bearing = parseFloat(document.getElementById('mf-bearing').value);
+  const bearingTol = parseFloat(document.getElementById('mf-bearing-tol').value) || 15;
+  const vendor = document.getElementById('mf-vendor').value;
+  const protocol = document.getElementById('mf-protocol').value;
+
+  const matched = allData.filter(r => {
+    if (freqOn && !isNaN(freq)) { const f = parseFloat(r['Frequency (Hz)'])/1e6; if (Math.abs(f - freq) > freqTol) return false; }
+    if (bearingOn && !isNaN(bearing)) { const a = parseFloat(r['Angle of Arrival']); if (isNaN(a) || r['Angle of Arrival']==='Unknown Angle') return false; const diff = Math.abs(((a-bearing+540)%360)-180); if (diff > bearingTol) return false; }
+    if (vendorOn) { if (vendor && r['Name'] !== vendor) return false; if (protocol && r['Protocol'] !== protocol) return false; }
+    return true;
+  });
+  document.getElementById('mf-match-count').textContent = matched.length;
+}
+
+// Watch freq/bearing inputs
+['mf-freq','mf-freq-tol','mf-bearing','mf-bearing-tol','mf-vendor','mf-protocol'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => { updateFilterMatchCount(); if (id.includes('bearing')) updateModalCompass(); if (id.includes('freq')) updateFreqPreview(); });
+});
+
+function saveFilter() {
+  const name = document.getElementById('mf-name').value.trim() || 'Unnamed Filter';
+  const f = {
+    name,
+    freqOn: document.getElementById('mf-freq-on').checked,
+    freq: document.getElementById('mf-freq').value,
+    freqTol: document.getElementById('mf-freq-tol').value,
+    band: document.getElementById('mf-band').value,
+    bearingOn: document.getElementById('mf-bearing-on').checked,
+    bearing: document.getElementById('mf-bearing').value,
+    bearingTol: document.getElementById('mf-bearing-tol').value,
+    vendorOn: document.getElementById('mf-vendor-on').checked,
+    vendor: document.getElementById('mf-vendor').value,
+    protocol: document.getElementById('mf-protocol').value,
+    timeoutOn: document.getElementById('mf-timeout-on').checked,
+    timeout: document.getElementById('mf-timeout').value,
+    createdAt: new Date().toISOString()
+  };
+  if (editingFilterIdx !== null) { savedFilters[editingFilterIdx] = f; }
+  else { savedFilters.push(f); }
+  closeFilterModal();
+  renderSavedFilters();
+  drawCompass();
+}
+
+function renderSavedFilters() {
+  const el = document.getElementById('savedFiltersList');
+  if (!savedFilters.length) { el.innerHTML = '<div style="font-size:10px;color:var(--text3);padding:4px 0">No filters yet. Click a bearing on the compass to create one.</div>'; return; }
+  el.innerHTML = savedFilters.map((f, i) => {
+    const tags = [];
+    if (f.freqOn && f.freq) tags.push(`${f.freq}±${f.freqTol}MHz`);
+    if (f.bearingOn && f.bearing !== '') tags.push(`${f.bearing}°±${f.bearingTol}°`);
+    if (f.vendorOn && f.vendor) tags.push(f.vendor);
+    if (f.vendorOn && f.protocol) tags.push(f.protocol);
+    return `<div class="filter-card">
+      <div class="filter-card-name">
+        <span>${f.name}</span>
+        <span>
+          <span style="color:var(--text3);font-size:11px;cursor:pointer;margin-right:6px" onclick="openFilterModal(${i})" title="Edit">✎</span>
+          <span class="filter-del" onclick="deleteFilter(${i})" title="Delete">✕</span>
+        </span>
+      </div>
+      <div class="filter-card-meta">${tags.map(t => `<span class="filter-tag">${t}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function deleteFilter(i) { savedFilters.splice(i, 1); renderSavedFilters(); drawCompass(); }
+
+// ─── TABLE ────────────────────────────────────────────────────────────────────
 function sortBy(col) { if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = false; } renderTable(); }
 
 function renderTable() {
@@ -704,7 +1173,6 @@ function renderTable() {
     if (!isNaN(na) && !isNaN(nb)) return sortAsc ? na - nb : nb - na;
     return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
   });
-
   tbody.innerHTML = sorted.map((r, i) => {
     const proto = r['Protocol'] || '';
     const protoClass = proto.replace(/\s/g,'') === 'OS OFDM' ? 'proto-OSOFDM' : `proto-${proto.replace(/\s/g,'')}`;
@@ -713,7 +1181,15 @@ function renderTable() {
     const rssiColor = rssi > -70 ? '#00d4aa' : rssi > -90 ? '#ffaa00' : '#ff4d4d';
     const freqMHz = r['Frequency (Hz)'] ? (parseFloat(r['Frequency (Hz)']) / 1e6).toFixed(0) : '—';
     const angle = r['Angle of Arrival'] === 'Unknown Angle' ? '—' : (r['Angle of Arrival'] || '—');
-    return `<tr onclick="selectRow(this, ${i})" data-idx="${i}">
+    // Is this row matched by any saved filter?
+    const filteredOut = savedFilters.some(f => {
+      if (f.freqOn && f.freq) { const fv = parseFloat(r['Frequency (Hz)'])/1e6; if (Math.abs(fv - parseFloat(f.freq)) > parseFloat(f.freqTol||5)) return false; }
+      if (f.bearingOn && f.bearing !== '') { const a = parseFloat(r['Angle of Arrival']); if (isNaN(a)) return false; const diff = Math.abs(((a-parseFloat(f.bearing)+540)%360)-180); if (diff > parseFloat(f.bearingTol||15)) return false; }
+      if (f.vendorOn && f.vendor && r['Name'] !== f.vendor) return false;
+      if (f.vendorOn && f.protocol && r['Protocol'] !== f.protocol) return false;
+      return true;
+    });
+    return `<tr onclick="selectRow(this, ${i})" data-idx="${i}" ${filteredOut ? 'style="opacity:0.35"' : ''} title="${filteredOut ? 'Matches a saved RF filter' : ''}">
       <td style="color:var(--text3)">${i+1}</td>
       <td>${(r['Timestamp (AUSTRALIA/SYDNEY)'] || '').replace('T', ' ').substring(0, 19)}</td>
       <td>${r['Name'] || '—'}</td>
@@ -722,7 +1198,7 @@ function renderTable() {
       <td>${r['Max Power (RSSI)'] || '—'}<span class="rssi-bar" style="background:${rssiColor};width:${rssiPct*0.4}px"></span></td>
       <td>${r['Min Power (RSSI)'] || '—'}</td>
       <td>${r['Detection Count'] || '—'}</td>
-      <td>${angle}</td>
+      <td>${angle !== '—' ? `<span style="color:var(--accent)">${angle}°</span>` : '—'}</td>
       <td>${r['Wi-Fi'] || '—'}</td>
     </tr>`;
   }).join('');
@@ -754,32 +1230,19 @@ function selectRow(tr, idx) {
   document.getElementById('d-mfr').textContent = r['Manufacturer Name'] || '—';
 }
 
-// CHARTS
+// ─── CHARTS ───────────────────────────────────────────────────────────────────
 const COLORS = ['#00d4aa','#0094ff','#a78bfa','#ffaa00','#ff4d4d','#22d3ee','#f472b6','#4ade80','#fb923c'];
-
 function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; } }
-
-function renderCharts() {
-  renderTimelineChart();
-  renderFreqChart();
-  renderProtoChart();
-  renderRssiChart();
-  renderDeviceChart();
-}
+function renderCharts() { renderTimelineChart(); renderFreqChart(); renderProtoChart(); renderRssiChart(); renderDeviceChart(); }
 
 function renderTimelineChart() {
   destroyChart('chartTimeline');
   const byHour = {};
-  filteredData.forEach(r => {
-    const ts = r['Timestamp (AUSTRALIA/SYDNEY)'] || '';
-    const h = ts.substring(0, 13);
-    if (h) byHour[h] = (byHour[h] || 0) + 1;
-  });
+  filteredData.forEach(r => { const h = (r['Timestamp (AUSTRALIA/SYDNEY)'] || '').substring(0, 13); if (h) byHour[h] = (byHour[h] || 0) + 1; });
   const labels = Object.keys(byHour).sort();
-  const data = labels.map(l => byHour[l]);
   chartInstances['chartTimeline'] = new Chart(document.getElementById('chartTimeline'), {
     type: 'line',
-    data: { labels: labels.map(l => l.slice(5)), datasets: [{ label: 'Events', data, borderColor: '#00d4aa', backgroundColor: 'rgba(0,212,170,0.1)', borderWidth: 1.5, pointRadius: 2, fill: true, tension: 0.3 }] },
+    data: { labels: labels.map(l => l.slice(5)), datasets: [{ label: 'Events', data: labels.map(l => byHour[l]), borderColor: '#00d4aa', backgroundColor: 'rgba(0,212,170,0.1)', borderWidth: 1.5, pointRadius: 2, fill: true, tension: 0.3 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#5a6280', maxRotation: 45, font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: '#5a6280', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
   });
 }
@@ -787,10 +1250,7 @@ function renderTimelineChart() {
 function renderFreqChart() {
   destroyChart('chartFreq');
   const freqCounts = {};
-  filteredData.forEach(r => {
-    const f = Math.round(parseFloat(r['Frequency (Hz)']) / 1e6 / 50) * 50;
-    if (!isNaN(f)) freqCounts[f] = (freqCounts[f] || 0) + 1;
-  });
+  filteredData.forEach(r => { const f = Math.round(parseFloat(r['Frequency (Hz)']) / 1e6 / 50) * 50; if (!isNaN(f)) freqCounts[f] = (freqCounts[f] || 0) + 1; });
   const labels = Object.keys(freqCounts).sort((a,b) => a-b);
   chartInstances['chartFreq'] = new Chart(document.getElementById('chartFreq'), {
     type: 'bar',
@@ -815,10 +1275,7 @@ function renderRssiChart() {
   destroyChart('chartRssi');
   const buckets = {};
   for (let i = -120; i <= -30; i += 5) buckets[i] = 0;
-  filteredData.forEach(r => {
-    const rssi = parseInt(r['Max Power (RSSI)']);
-    if (!isNaN(rssi)) { const b = Math.floor(rssi / 5) * 5; if (buckets[b] !== undefined) buckets[b]++; }
-  });
+  filteredData.forEach(r => { const rssi = parseInt(r['Max Power (RSSI)']); if (!isNaN(rssi)) { const b = Math.floor(rssi / 5) * 5; if (buckets[b] !== undefined) buckets[b]++; } });
   const labels = Object.keys(buckets).sort((a,b) => +a - +b);
   chartInstances['chartRssi'] = new Chart(document.getElementById('chartRssi'), {
     type: 'bar',
@@ -832,8 +1289,7 @@ function renderDeviceChart() {
   const counts = {};
   filteredData.forEach(r => { const n = r['Name'] || 'Unknown'; counts[n] = (counts[n] || 0) + 1; });
   const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
-  const labels = sorted.map(s => s[0]);
-  const data = sorted.map(s => s[1]);
+  const labels = sorted.map(s => s[0]); const data = sorted.map(s => s[1]);
   const h = Math.max(200, labels.length * 42 + 60);
   document.getElementById('devChartWrap').style.height = h + 'px';
   chartInstances['chartDevices'] = new Chart(document.getElementById('chartDevices'), {
@@ -847,14 +1303,10 @@ function renderLocations() {
   const tbody = document.getElementById('locationBody');
   const withCoords = filteredData.filter(r => r['Sensor Location URL'] || r['Drone Location URL']);
   tbody.innerHTML = withCoords.slice(0, 200).map(r => {
-    const lat = r['Latitude'] || '';
-    const lon = r['Longitude'] || '';
-    const dLat = r['Drone Latitude'] || '';
-    const dLon = r['Drone Longitude'] || '';
-    const sensorUrl = r['Sensor Location URL'] || '';
-    const droneUrl = r['Drone Location URL'] || '';
-    const hDist = r['Horizontal Distance'] || '—';
-    const vDist = r['Vertical Distance'] || '—';
+    const lat = r['Latitude'] || ''; const lon = r['Longitude'] || '';
+    const dLat = r['Drone Latitude'] || ''; const dLon = r['Drone Longitude'] || '';
+    const sensorUrl = r['Sensor Location URL'] || ''; const droneUrl = r['Drone Location URL'] || '';
+    const hDist = r['Horizontal Distance'] || '—'; const vDist = r['Vertical Distance'] || '—';
     return `<tr>
       <td>${(r['Timestamp (AUSTRALIA/SYDNEY)'] || '').substring(0, 19)}</td>
       <td>${r['Name'] || '—'}</td>
@@ -875,6 +1327,7 @@ function switchTab(name) {
   document.getElementById('page-' + name).classList.add('active');
   document.getElementById('detailPanel').classList.add('hidden');
 }
+
 </script>
 </body>
 </html>
